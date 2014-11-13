@@ -1,0 +1,5 @@
+name: TDD_Exercise
+description: A sample command-line application
+dependencies:
+  dartmocks: any
+  unittest: any
