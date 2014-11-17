@@ -1,7 +1,7 @@
 import 'package:unittest/unittest.dart';
 import 'package:dartmocks/dartmocks.dart';
 
-import '../lib/issue.dart';
+import '../lib/issuelib.dart';
 void main() {
   
   test('calling createIssue on IssueService stores issue', () {
