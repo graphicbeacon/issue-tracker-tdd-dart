@@ -5,4 +5,6 @@ part 'issueboard.dart';
 part 'issueboardservice.dart';
 part 'issueservice.dart';
 part 'issuestatus.dart';
-part 'issuestore.dart';
+part 'store.dart';
+part 'projectservice.dart';
+part 'project.dart';

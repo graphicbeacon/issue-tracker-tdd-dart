@@ -2,14 +2,14 @@ part of issuelib;
 
 class IssueService {
   
-  var issueStore;
+  var store;
   
-  IssueService(this.issueStore);
+  IssueService(this.store);
   
   void createIssue(String title, String description, 
                    DateTime dueDate, IssueStatus status) {
     
-    issueStore.store(new Issue(
+    store.storeIssue(new Issue(
       title: title,
       description: description,
       dueDate: dueDate,

@@ -7,8 +7,8 @@ void main() {
   test('calling createIssue on IssueService stores issue', () {
     
     // Arrange
-    var issueStore = mock('IssueStore')
-        ..shouldReceive('store');
+    var issueStore = mock('Store')
+        ..shouldReceive('storeIssue');
     
     IssueService issueService = new IssueService(issueStore);
     String title = '';
@@ -27,8 +27,8 @@ void main() {
     // Arrange
     Issue issue = null;
     
-    var issueStore = stub('IssueStore')
-      ..stub('store').andCall((receivedIssue) => issue = receivedIssue);
+    var issueStore = stub('Store')
+      ..stub('storeIssue').andCall((receivedIssue) => issue = receivedIssue);
      
     IssueService issueService = new IssueService(issueStore);
     

@@ -13,8 +13,3 @@ class Issue {
     IssueStatus this.status});
   
 }
-
-
-
-
-
