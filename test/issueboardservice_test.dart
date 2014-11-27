@@ -64,5 +64,30 @@ void main() {
     // Assert
     assert(board.issues.length == 2);
   });
+  
+  test('calling getIssuesByProjectName on IssueBoardService returns all issues filtered by project name', () {
+    // Arrange
+    var projects = new List<Project>()
+        ..add(new Project(id: 1, name: 'Project 1'))
+        ..add(new Project(id: 2, name: 'Project 2'));
+    
+    var issues = new List<Issue>()
+        ..add(new Issue (title: 'Issue 1', projectId: 1))
+        ..add(new Issue (title: 'Issue 2', projectId: 2))
+        ..add(new Issue (title: 'Issue 3', projectId: 2));
+
+    var store = stub('Store')
+        ..stub('getAllIssues').andReturn(issues)
+        ..stub('getAllProjects').andReturn(projects);
+  
+    IssueBoardService issueBoardService = new IssueBoardService(store);  
+        
+    // Act
+    IssueBoard board = issueBoardService.getIssuesByProjectName('Project 1');    
+        
+    // Assert
+    assert(board.issues.length == 1);
+  });
+  
 }
 

@@ -1,12 +1,12 @@
 part of issuelib;
 
 class IssueBoardService {
-  var issueStore;
+  var store;
   
-  IssueBoardService(this.issueStore);
+  IssueBoardService(this.store);
   
   IssueBoard getAllIssues() {
-    var issues = issueStore.getAllIssues();
+    var issues = store.getAllIssues();
     
     issues.sort((a,b) => b.dueDate.compareTo(a.dueDate));
     
@@ -14,10 +14,23 @@ class IssueBoardService {
   }
   
   IssueBoard getIssuesByName(String name) {
-    List<Issue> issues = issueStore.getAllIssues();
+    List<Issue> issues = store.getAllIssues();
     var issueFilter = issues.where((Issue issue) => issue.title.contains(name));
     
     return new IssueBoard(issueFilter.toList());
+  }
+  
+  IssueBoard getIssuesByProjectName(String projectName) {
+    Project project = store
+        .getAllProjects()
+        .singleWhere((Project project) => project.name.toLowerCase() == projectName.toLowerCase());
+    
+    List<Issue> issues = store
+        .getAllIssues()
+        .where((Issue issue) => issue.projectId == project.id)
+        .toList();
+    
+    return new IssueBoard(issues);
   }
   
 }

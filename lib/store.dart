@@ -7,6 +7,7 @@ abstract class Store {
    
   // Queries
   List<Issue> getAllIssues();
+  List<Project> getAllProjects();
   
   bool hasProject(int projectId);
   
