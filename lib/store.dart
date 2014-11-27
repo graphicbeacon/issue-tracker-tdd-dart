@@ -6,6 +6,8 @@ abstract class Store {
   void storeProject(Project project);
    
   // Queries
-  List<Project> getAllProjects();
   List<Issue> getAllIssues();
+  
+  bool hasProject(int projectId);
+  
 }

@@ -6,10 +6,12 @@ class Issue {
   String description;
   DateTime dueDate;
   IssueStatus status;
+  int projectId;
   
-  Issue({String this.title: "", 
-    String this.description: "", 
+  Issue({String this.title, 
+    String this.description, 
     DateTime this.dueDate, 
-    IssueStatus this.status});
+    IssueStatus this.status,
+    int this.projectId});
   
 }

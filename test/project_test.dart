@@ -8,7 +8,7 @@ void main() {
   test('can create Project', () {
     // Arrange
     var store = mock('Store')
-        ..stub('getAllProjects').andReturn(new List<Project>())
+        ..stub('hasProject').andReturn(false)
         ..shouldReceive('storeProject');
 
     ProjectService projectService = new ProjectService(store);
@@ -28,7 +28,7 @@ void main() {
     Project project = null;
 
     var store = stub('Store')
-        ..stub('getAllProjects').andReturn(new List<Project>())
+        ..stub('hasProject').andReturn(false)
         ..stub('storeProject').andCall((receivedProject) => project = receivedProject);
 
     ProjectService projectService = new ProjectService(store);
@@ -48,11 +48,9 @@ void main() {
 
   test('will throw error if project Id is not unique', () {
     // Arrange
-    var projects = new List<Project>()..add(new Project(id: 1));
-
     var store = stub('Store')
         ..stub('storeProject').andReturn(null)
-        ..stub('getAllProjects').andReturn(projects);
+        ..stub('hasProject').andReturn(true);
 
     ProjectService projectService = new ProjectService(store);
     int id = 1;

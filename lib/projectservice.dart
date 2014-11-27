@@ -6,10 +6,7 @@ class ProjectService {
   ProjectService(this.store);
   
   void createProject(int id, String name, String description) {
-    var idExists = store.getAllProjects()
-        .any((Project project) => project.id == id);
-    
-    if (idExists == true)
+    if (store.hasProject(id))
       throw new ArgumentError("Id must be unique");
     
     var project = new Project(
