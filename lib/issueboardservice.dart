@@ -1,7 +1,8 @@
 part of issuelib;
 
 class IssueBoardService {
-  var store;
+  
+  Store store;
   
   IssueBoardService(this.store);
   

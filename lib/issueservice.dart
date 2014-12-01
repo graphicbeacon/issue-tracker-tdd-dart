@@ -2,7 +2,7 @@ part of issuelib;
 
 class IssueService {
   
-  var store;
+  Store store;
   
   IssueService(this.store);
   

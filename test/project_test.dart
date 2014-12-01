@@ -1,16 +1,17 @@
 import 'package:unittest/unittest.dart';
-import 'package:dartmocks/dartmocks.dart';
+import 'package:mock/mock.dart';
 
 import '../lib/issuelib.dart';
+import 'mocks.dart';
+
 
 void main() {
 
   test('can create Project', () {
     // Arrange
-    var store = mock('Store')
-        ..stub('hasProject').andReturn(false)
-        ..shouldReceive('storeProject');
-
+    var store = new StoreMock()
+          ..when(callsTo('hasProject')).alwaysReturn(false);
+    
     ProjectService projectService = new ProjectService(store);
     int id = 0;
     String name = 'Test Project';
@@ -20,38 +21,34 @@ void main() {
     projectService.createProject(id, name, description);
 
     // Assert
-    store.verify();
+    store.getLogs(callsTo('storeProject')).verify(happenedOnce);
   });
 
   test('can create project and set all properties', () {
     // Arrange
-    Project project = null;
+    Project expectedProject = new Project(
+        id : 0,
+        name : 'Test Project',
+        description : 'This is a test'
+    );
 
-    var store = stub('Store')
-        ..stub('hasProject').andReturn(false)
-        ..stub('storeProject').andCall((receivedProject) => project = receivedProject);
-
+    var store = new StoreMock()
+        ..when(callsTo('hasProject')).alwaysReturn(false);
+    
     ProjectService projectService = new ProjectService(store);
-    int id = 0;
-    String name = 'Test Project';
-    String description = 'This is a test';
 
     // Act
-    projectService.createProject(id, name, description);
+    projectService.createProject(expectedProject.id, expectedProject.name, expectedProject.description);
 
     // Assert
-    assert(project != null);
-    assert(project.id == id);
-    assert(project.name == name);
-    assert(project.description == description);
+    store.getLogs(callsTo('storeProject', expectedProject)).verify(happenedOnce);
   });
 
   test('will throw error if project Id is not unique', () {
     // Arrange
-    var store = stub('Store')
-        ..stub('storeProject').andReturn(null)
-        ..stub('hasProject').andReturn(true);
-
+    var store = new StoreMock()
+        ..when(callsTo('hasProject')).alwaysReturn(true);
+    
     ProjectService projectService = new ProjectService(store);
     int id = 1;
     String name = 'Test Project';

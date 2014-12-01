@@ -1,7 +1,7 @@
 part of issuelib;
 
 class ProjectService {
-  var store;
+  Store store;
     
   ProjectService(this.store);
   

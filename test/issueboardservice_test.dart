@@ -1,7 +1,8 @@
 import 'package:unittest/unittest.dart';
-import 'package:dartmocks/dartmocks.dart';
+import 'package:mock/mock.dart';
 
 import '../lib/issuelib.dart';
+import 'mocks.dart';
 
 void main() {
   
@@ -12,8 +13,8 @@ void main() {
       ..add(new Issue (dueDate: new DateTime.now()))
       ..add(new Issue (dueDate: new DateTime.now()));
       
-    var issueStore = stub('Store')
-        ..stub('getAllIssues').andReturn(issues);
+    var issueStore = new StoreMock()
+      ..when(callsTo('getAllIssues')).alwaysReturn(issues);
     
     IssueBoardService issueBoardService = new IssueBoardService(issueStore);
     
@@ -31,8 +32,8 @@ void main() {
       ..add(new Issue (dueDate: DateTime.parse('2014-11-13 14:59:00')))
       ..add(new Issue (dueDate: DateTime.parse('2014-11-13 17:59:00')));
       
-    var issueStore = stub('Store')
-        ..stub('getAllIssues').andReturn(new List<Issue>.from(issues));
+    var issueStore = new StoreMock()
+      ..when(callsTo('getAllIssues')).alwaysReturn(new List<Issue>.from(issues));
     
     IssueBoardService issueBoardService = new IssueBoardService(issueStore);
     
@@ -49,13 +50,13 @@ void main() {
     
     // Arrange
     var issues = new List<Issue>()
-          ..add(new Issue (title: 'Create blah'))
-          ..add(new Issue (title: 'Create blah feature'))
-          ..add(new Issue (title: 'Delete pingdom alerts'));
+      ..add(new Issue (title: 'Create blah'))
+      ..add(new Issue (title: 'Create blah feature'))
+      ..add(new Issue (title: 'Delete pingdom alerts'));
           
-    var issueStore = stub('Store')
-        ..stub('getAllIssues').andReturn(new List<Issue>.from(issues));
-
+    var issueStore = new StoreMock()
+      ..when(callsTo('getAllIssues')).alwaysReturn(new List<Issue>.from(issues));
+    
     IssueBoardService issueBoardService = new IssueBoardService(issueStore);
         
     // Act
@@ -68,18 +69,18 @@ void main() {
   test('calling getIssuesByProjectName on IssueBoardService returns all issues filtered by project name', () {
     // Arrange
     var projects = new List<Project>()
-        ..add(new Project(id: 1, name: 'Project 1'))
-        ..add(new Project(id: 2, name: 'Project 2'));
+      ..add(new Project(id: 1, name: 'Project 1'))
+      ..add(new Project(id: 2, name: 'Project 2'));
     
     var issues = new List<Issue>()
-        ..add(new Issue (title: 'Issue 1', projectId: 1))
-        ..add(new Issue (title: 'Issue 2', projectId: 2))
-        ..add(new Issue (title: 'Issue 3', projectId: 2));
-
-    var store = stub('Store')
-        ..stub('getAllIssues').andReturn(issues)
-        ..stub('getAllProjects').andReturn(projects);
-  
+      ..add(new Issue (title: 'Issue 1', projectId: 1))
+      ..add(new Issue (title: 'Issue 2', projectId: 2))
+      ..add(new Issue (title: 'Issue 3', projectId: 2));
+    
+    var store = new StoreMock()
+      ..when(callsTo('getAllIssues')).alwaysReturn(issues)
+      ..when(callsTo('getAllProjects')).alwaysReturn(projects);
+    
     IssueBoardService issueBoardService = new IssueBoardService(store);  
         
     // Act

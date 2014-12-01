@@ -1,15 +1,16 @@
 import 'package:unittest/unittest.dart';
-import 'package:dartmocks/dartmocks.dart';
+import 'package:mock/mock.dart';
 
 import '../lib/issuelib.dart';
+import 'mocks.dart';
+
 void main() {
   
   test('calling createIssue on IssueService stores issue', () {
     
     // Arrange
-    var issueStore = mock('Store')
-        ..stub('hasProject').andReturn(true)
-        ..shouldReceive('storeIssue');
+    var issueStore = new StoreMock()
+        ..when(callsTo('hasProject')).alwaysReturn(true);
     
     IssueService issueService = new IssueService(issueStore);
     String title = '';
@@ -22,67 +23,36 @@ void main() {
     issueService.createIssue(title, description, dueDate, issueStatus, projectId);
     
     // Assert
-    issueStore.verify();
+    issueStore.getLogs(callsTo('storeIssue')).verify(happenedOnce);
   });
   
   test('calling createIssue on IssueService stores issue with correct values', () {
     // Arrange
-    Issue issue = null;
+    Issue expectedIssue = new Issue(
+        title : 'Lorem ipsum dolor sit amet',
+        description : 'This is the issue description.',
+        dueDate : new DateTime.now(),
+        status : new IssueStatus.opened(),
+        projectId : 1
+    );
     
-    var issueStore = stub('Store')
-      ..stub('hasProject').andReturn(true)
-      ..stub('storeIssue').andCall((receivedIssue) => issue = receivedIssue);
+    var issueStore = new StoreMock()
+      ..when(callsTo('hasProject')).alwaysReturn(true);
      
     IssueService issueService = new IssueService(issueStore);
     
-    String title = 'Lorem ipsum dolor sit amet';
-    String description = 'This is the issue description.';
-    DateTime dueDate = new DateTime.now();
-    IssueStatus issueStatus = new IssueStatus.opened();
-    int projectId = 0;
-     
     // Act
-    issueService.createIssue(title, description, dueDate, issueStatus, projectId);
+    issueService.createIssue(expectedIssue.title, expectedIssue.description, 
+        expectedIssue.dueDate, expectedIssue.status, expectedIssue.projectId);
      
     // Assert
-    assert(issue != null);
-    assert(issue.title == title);
-    assert(issue.description == description);
-    assert(issue.dueDate == dueDate);
-    assert(issue.status == issueStatus);
-  });
-  
-  test('calling createIssue on IssueService sets project id', () {
-    // Arrange
-    Issue issue = null;
-     
-    var issueStore = stub('Store')
-      ..stub('hasProject').andReturn(true)
-      ..stub('storeIssue').andCall((receivedIssue) => issue = receivedIssue);
-      
-    IssueService issueService = new IssueService(issueStore);
-     
-    String title = 'Lorem ipsum dolor sit amet';
-    String description = 'This is the issue description.';
-    DateTime dueDate = new DateTime.now();
-    IssueStatus issueStatus = new IssueStatus.opened();
-    int projectId = 0;
-      
-    // Act
-    issueService.createIssue(title, description, dueDate, issueStatus, projectId);
-      
-    // Assert
-    assert(issue != null);
-    assert(issue.projectId == projectId);
+    issueStore.getLogs(callsTo('storeIssue', expectedIssue)).verify(happenedOnce);
   });
   
   test('calling createIssue on IssueService throws if the specified projectId does not exist in store', () {
       // Arrange
-      Issue issue = null;
-      
-      var issueStore = stub('Store')
-        ..stub('hasProject').andReturn(false)
-        ..stub('storeIssue').andCall((receivedIssue) => issue = receivedIssue);
+      var issueStore = new StoreMock()
+        ..when(callsTo('hasProject')).alwaysReturn(false);
         
       IssueService issueService = new IssueService(issueStore);
        

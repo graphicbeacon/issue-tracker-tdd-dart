@@ -15,4 +15,6 @@ class IssueStatus {
     this.state = 2;
   }
   
+  bool operator ==(o) => o is IssueStatus && state == o.state;  
+  
 }

@@ -14,4 +14,12 @@ class Issue {
     IssueStatus this.status,
     int this.projectId});
   
+  bool operator ==(o) {
+    return o is Issue && 
+        title == o.title &&
+        description == o.description &&
+        dueDate == o.dueDate &&
+        status == o.status &&
+        projectId == o.projectId;  
+  }
 }
