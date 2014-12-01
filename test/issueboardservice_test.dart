@@ -69,13 +69,13 @@ void main() {
   test('calling getIssuesByProjectName on IssueBoardService returns all issues filtered by project name', () {
     // Arrange
     var projects = new List<Project>()
-      ..add(new Project(id: 1, name: 'Project 1'))
-      ..add(new Project(id: 2, name: 'Project 2'));
+      ..add(new Project(name: 'Project 1'))
+      ..add(new Project(name: 'Project 2'));
     
     var issues = new List<Issue>()
-      ..add(new Issue (title: 'Issue 1', projectId: 1))
-      ..add(new Issue (title: 'Issue 2', projectId: 2))
-      ..add(new Issue (title: 'Issue 3', projectId: 2));
+      ..add(new Issue (title: 'Issue 1', projectName: 'Project 1'))
+      ..add(new Issue (title: 'Issue 2', projectName: 'Project 2'))
+      ..add(new Issue (title: 'Issue 3', projectName: 'Project 3'));
     
     var store = new StoreMock()
       ..when(callsTo('getAllIssues')).alwaysReturn(issues)

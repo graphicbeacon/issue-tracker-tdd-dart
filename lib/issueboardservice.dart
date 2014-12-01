@@ -28,7 +28,7 @@ class IssueBoardService {
     
     List<Issue> issues = store
         .getAllIssues()
-        .where((Issue issue) => issue.projectId == project.id)
+        .where((Issue issue) => issue.projectName == project.name)
         .toList();
     
     return new IssueBoard(issues);

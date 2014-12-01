@@ -9,6 +9,6 @@ abstract class Store {
   List<Issue> getAllIssues();
   List<Project> getAllProjects();
   
-  bool hasProject(int projectId);
+  bool hasProject(String projectName);
   
 }

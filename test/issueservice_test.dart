@@ -17,10 +17,10 @@ void main() {
     String description = '';
     DateTime dueDate = new DateTime.now();
     IssueStatus issueStatus = new IssueStatus.opened();
-    int projectId = 0;
+    String projectName = '';
     
     // Act
-    issueService.createIssue(title, description, dueDate, issueStatus, projectId);
+    issueService.createIssue(title, description, dueDate, issueStatus, projectName);
     
     // Assert
     issueStore.getLogs(callsTo('storeIssue')).verify(happenedOnce);
@@ -33,7 +33,7 @@ void main() {
         description : 'This is the issue description.',
         dueDate : new DateTime.now(),
         status : new IssueStatus.opened(),
-        projectId : 1
+        projectName : 'Project 1'
     );
     
     var issueStore = new StoreMock()
@@ -43,7 +43,7 @@ void main() {
     
     // Act
     issueService.createIssue(expectedIssue.title, expectedIssue.description, 
-        expectedIssue.dueDate, expectedIssue.status, expectedIssue.projectId);
+        expectedIssue.dueDate, expectedIssue.status, expectedIssue.projectName);
      
     // Assert
     issueStore.getLogs(callsTo('storeIssue', expectedIssue)).verify(happenedOnce);
@@ -60,10 +60,10 @@ void main() {
       String description = 'This is the issue description.';
       DateTime dueDate = new DateTime.now();
       IssueStatus issueStatus = new IssueStatus.opened();
-      int projectId = 2;
+      String projectName = 'Project 1';
         
       // Act, Assert
-      expect(() => issueService.createIssue(title, description, dueDate, issueStatus, projectId),
+      expect(() => issueService.createIssue(title, description, dueDate, issueStatus, projectName),
           throwsArgumentError);
     });
 }

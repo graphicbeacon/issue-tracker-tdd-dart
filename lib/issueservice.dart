@@ -7,9 +7,9 @@ class IssueService {
   IssueService(this.store);
   
   void createIssue(String title, String description, 
-                   DateTime dueDate, IssueStatus status, int projectId) {
+                   DateTime dueDate, IssueStatus status, String projectName) {
     
-    if (!store.hasProject(projectId))
+    if (!store.hasProject(projectName))
       throw new ArgumentError("Invalid projectId specified.");
       
     
@@ -18,7 +18,7 @@ class IssueService {
       description: description,
       dueDate: dueDate,
       status: status,
-      projectId: projectId
+      projectName: projectName
     ));
   }
 }

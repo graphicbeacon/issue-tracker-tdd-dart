@@ -6,13 +6,13 @@ class Issue {
   String description;
   DateTime dueDate;
   IssueStatus status;
-  int projectId;
+  String projectName;
   
   Issue({String this.title, 
     String this.description, 
     DateTime this.dueDate, 
     IssueStatus this.status,
-    int this.projectId});
+    String this.projectName});
   
   bool operator ==(o) {
     return o is Issue && 
@@ -20,6 +20,6 @@ class Issue {
         description == o.description &&
         dueDate == o.dueDate &&
         status == o.status &&
-        projectId == o.projectId;  
+        projectName == o.projectName;  
   }
 }
