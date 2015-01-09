@@ -27,6 +27,7 @@ void main() {
   });
   
   test('calling createIssue on IssueService stores issue with correct values', () {
+    
     // Arrange
     Issue expectedIssue = new Issue(
         title : 'Lorem ipsum dolor sit amet',
@@ -49,7 +50,8 @@ void main() {
     issueStore.getLogs(callsTo('storeIssue', expectedIssue)).verify(happenedOnce);
   });
   
-  test('calling createIssue on IssueService throws if the specified projectId does not exist in store', () {
+  test('calling createIssue on IssueService throws if the specified project name does not exist in store', () {
+    
       // Arrange
       var issueStore = new StoreMock()
         ..when(callsTo('hasProject')).alwaysReturn(false);

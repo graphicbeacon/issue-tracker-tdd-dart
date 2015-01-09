@@ -12,7 +12,6 @@ class IssueService {
     if (!store.hasProject(projectName))
       throw new ArgumentError("Invalid projectId specified.");
       
-    
     store.storeIssue(new Issue(
       title: title,
       description: description,

@@ -19,7 +19,7 @@ void main() {
     IssueBoardService issueBoardService = new IssueBoardService(issueStore);
     
     // Act
-    IssueBoard board = issueBoardService.getAllIssues();
+    IssueBoard board = issueBoardService.getAllIssues(null);
     
     // Assert
     assert(board.issues != null);
@@ -38,7 +38,7 @@ void main() {
     IssueBoardService issueBoardService = new IssueBoardService(issueStore);
     
     // Act
-    IssueBoard board = issueBoardService.getAllIssues();
+    IssueBoard board = issueBoardService.getAllIssues(null);
     
     // Assert
     assert(board.issues.length == issues.length);
@@ -60,7 +60,7 @@ void main() {
     IssueBoardService issueBoardService = new IssueBoardService(issueStore);
         
     // Act
-    IssueBoard board = issueBoardService.getIssuesByName('Create');
+    IssueBoard board = issueBoardService.getIssuesByName('Create', null);
     
     // Assert
     assert(board.issues.length == 2);
@@ -84,11 +84,176 @@ void main() {
     IssueBoardService issueBoardService = new IssueBoardService(store);  
         
     // Act
-    IssueBoard board = issueBoardService.getIssuesByProjectName('Project 1');    
+    IssueBoard board = issueBoardService.getIssuesByProjectName('Project 1', null);    
         
     // Assert
     assert(board.issues.length == 1);
   });
   
+  test('retrieving IssueBoard via getAllIssues limits results set based on page info', () {
+    // Arrange
+    var pageInfo = new PageInfo(0, 2);
+    var issues = new List<Issue>()
+          ..add(new Issue (title: 'Issue 1', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+          ..add(new Issue (title: 'Issue 2', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+          ..add(new Issue (title: 'Issue 3', dueDate: DateTime.parse('2014-11-13 14:59:00')));
+    
+    var store = new StoreMock()
+          ..when(callsTo('getAllIssues')).alwaysReturn(issues);
+
+    IssueBoardService issueBoardService = new IssueBoardService(store);  
+    
+    // Act
+    IssueBoard board = issueBoardService.getAllIssues(pageInfo);
+    
+    // Assert
+    assert(board.issues.length == pageInfo.pageSize);
+  });
+  
+  test('retrieving IssueBoard via getIssuesByName limits results set based on page info', () {
+    // Arrange
+    var pageInfo = new PageInfo(0, 2);
+    var issues = new List<Issue>()
+          ..add(new Issue (title: 'Issue 1', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+          ..add(new Issue (title: 'Issue 2', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+          ..add(new Issue (title: 'Issue 3', dueDate: DateTime.parse('2014-11-13 14:59:00')));
+    
+    var store = new StoreMock()
+          ..when(callsTo('getAllIssues')).alwaysReturn(issues);
+
+    IssueBoardService issueBoardService = new IssueBoardService(store);  
+    
+    // Act
+    IssueBoard board = issueBoardService.getIssuesByName('Issue', pageInfo);
+    
+    // Assert
+    assert(board.issues.length == pageInfo.pageSize);
+  });
+  
+  test('retrieving IssueBoard via getIssuesByprojectName limits results set based on page info', () {
+    // Arrange
+    var pageInfo = new PageInfo(0, 2);
+    var projects = new List<Project>()
+          ..add(new Project(name: 'Project 1'));
+   
+    var issues = new List<Issue>()
+         ..add(new Issue (title: 'Issue 1', projectName: 'Project 1'))
+         ..add(new Issue (title: 'Issue 2', projectName: 'Project 1'))
+         ..add(new Issue (title: 'Issue 3', projectName: 'Project 1'));
+   
+    var store = new StoreMock()
+        ..when(callsTo('getAllIssues')).alwaysReturn(issues)
+        ..when(callsTo('getAllProjects')).alwaysReturn(projects);
+   
+    IssueBoardService issueBoardService = new IssueBoardService(store);  
+       
+    // Act
+    IssueBoard board = issueBoardService.getIssuesByProjectName('Project 1', pageInfo);
+    
+    // Assert
+    assert(board.issues.length == pageInfo.pageSize);
+  });
+  
+  test('retrieving IssueBoard via getAllIssues limits results set to specified page size and sets paging metadata', () {
+      // Arrange
+      var pageInfo = new PageInfo(0, 2);
+      var issues = new List<Issue>()
+            ..add(new Issue (title: 'Issue 1', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+            ..add(new Issue (title: 'Issue 2', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+            ..add(new Issue (title: 'Issue 3', dueDate: DateTime.parse('2014-11-13 14:59:00')));
+      
+      var store = new StoreMock()
+            ..when(callsTo('getAllIssues')).alwaysReturn(issues);
+
+      IssueBoardService issueBoardService = new IssueBoardService(store);  
+      
+      // Act
+      IssueBoard board = issueBoardService.getAllIssues(pageInfo);
+      
+      // Assert
+      assert(board.pageInfo == pageInfo);
+      assert(board.searchQueryMethod == #getAllIssues);
+      expect(board.searchQueryArgs, orderedEquals([]));
+    });
+    
+    test('retrieving IssueBoard via getIssuesByName limits results set to specified page size and sets paging metadata', () {
+      // Arrange
+      var pageInfo = new PageInfo(0, 2);
+      String searchTerm = 'Issue';
+      
+      var issues = new List<Issue>()
+            ..add(new Issue (title: 'Issue 1', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+            ..add(new Issue (title: 'Issue 2', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+            ..add(new Issue (title: 'Issue 3', dueDate: DateTime.parse('2014-11-13 14:59:00')));
+      
+      var store = new StoreMock()
+            ..when(callsTo('getAllIssues')).alwaysReturn(issues);
+
+      IssueBoardService issueBoardService = new IssueBoardService(store);  
+      
+      // Act
+      IssueBoard board = issueBoardService.getIssuesByName(searchTerm, pageInfo);
+      
+      // Assert
+      assert(board.pageInfo == pageInfo);
+      assert(board.searchQueryMethod == #getIssuesByName);
+      expect(board.searchQueryArgs, orderedEquals([searchTerm]));
+    });
+    
+    test('retrieving IssueBoard via getIssuesByprojectName limits results set to specified page size and sets paging metadata', () {
+      // Arrange
+      var pageInfo = new PageInfo(0, 2);
+      String projectName = 'Project 1';
+      var projects = new List<Project>()
+            ..add(new Project(name: 'Project 1'));
+     
+      var issues = new List<Issue>()
+           ..add(new Issue (title: 'Issue 1', projectName: 'Project 1'))
+           ..add(new Issue (title: 'Issue 2', projectName: 'Project 1'))
+           ..add(new Issue (title: 'Issue 3', projectName: 'Project 1'));
+     
+      var store = new StoreMock()
+          ..when(callsTo('getAllIssues')).alwaysReturn(issues)
+          ..when(callsTo('getAllProjects')).alwaysReturn(projects);
+     
+      IssueBoardService issueBoardService = new IssueBoardService(store);  
+         
+      // Act
+      IssueBoard board = issueBoardService.getIssuesByProjectName(projectName, pageInfo);
+      
+      // Assert
+      assert(board.pageInfo == pageInfo);
+      assert(board.searchQueryMethod == #getIssuesByProjectName);
+      expect(board.searchQueryArgs, orderedEquals([projectName]));
+    });
+  
+  test('calling GetNextPage on the IssueBoard service will retrieve the set of results limited to the specified page size', () {
+    // Arrange
+    var pageInfo = new PageInfo(0, 2);
+    var issues = new List<Issue>()
+          ..add(new Issue (title: 'Issue 1', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+          ..add(new Issue (title: 'Issue 2', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+          ..add(new Issue (title: 'Issue 3', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+          ..add(new Issue (title: 'Issue 4', dueDate: DateTime.parse('2014-11-13 14:59:00')));
+    
+    var store = new StoreMock()
+          ..when(callsTo('getAllIssues')).alwaysReturn(issues);
+
+    IssueBoardService issueBoardService = new IssueBoardService(store);
+    IssueBoard board = issueBoardService.getAllIssues(pageInfo);
+    
+    // Act
+    IssueBoard nextPageBoard = issueBoardService.getNextPage(board); 
+    
+    // Assert
+    assert(board.issues.length == pageInfo.pageSize);
+    assert(nextPageBoard.issues.length == pageInfo.pageSize);
+    
+    assert(board.issues[0].title == issues[0].title);
+    assert(board.issues[1].title == issues[1].title);
+    assert(nextPageBoard.issues[0].title == issues[2].title);
+    assert(nextPageBoard.issues[1].title == issues[3].title);
+    
+  });
 }
 
