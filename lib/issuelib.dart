@@ -10,4 +10,5 @@ part 'issuestatus.dart';
 part 'store.dart';
 part 'projectservice.dart';
 part 'project.dart';
-part 'pageInfo.dart';
+part 'pageinfo.dart';
+part 'pagemanager.dart';

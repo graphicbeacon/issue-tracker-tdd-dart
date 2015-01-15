@@ -11,6 +11,7 @@ class IssueBoardService {
     
     var issues = store.getAllIssues();
     
+    
     issues.sort((a,b) => b.dueDate.compareTo(a.dueDate));
     
     return new IssueBoard(pageInfo, #getAllIssues, [], 
@@ -43,32 +44,5 @@ class IssueBoardService {
     
     return new IssueBoard(pageInfo, #getIssuesByProjectName, [projectName], 
             issues.skip(pageInfo.skipCount).take(pageInfo.pageSize).toList());
-  }
-  
-  IssueBoard getNextPage(IssueBoard issueBoard) {
-    
-    var resultsToSkip = (issueBoard.pageInfo.pageSize + issueBoard.pageInfo.skipCount);
-    
-    issueBoard.searchQueryArgs
-        ..add(new PageInfo(resultsToSkip, issueBoard.pageInfo.pageSize));
-    
-    var thisInstance = reflect(this);
-    var result = thisInstance.invoke(issueBoard.searchQueryMethod, issueBoard.searchQueryArgs);
-    
-    return result.reflectee as IssueBoard;
-  }
-  
-  IssueBoard getPreviousPage(IssueBoard issueBoard) {
-    var resultsToSkip = (issueBoard.pageInfo.skipCount - issueBoard.pageInfo.pageSize);
-    
-    if (resultsToSkip < 0) resultsToSkip = 0;
-    
-    issueBoard.searchQueryArgs
-        ..add(new PageInfo(resultsToSkip, issueBoard.pageInfo.pageSize));
-    
-    var thisInstance = reflect(this);
-    var result = thisInstance.invoke(issueBoard.searchQueryMethod, issueBoard.searchQueryArgs);
-    
-    return result.reflectee as IssueBoard;
   }
 }

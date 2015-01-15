@@ -21,5 +21,5 @@ class IssueService {
     ));
   }
   
-  // TODO: Make issue names uniue within a project
+  // TODO: Make issue names unique within a project
 }
