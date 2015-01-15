@@ -20,4 +20,6 @@ class IssueService {
       projectName: projectName
     ));
   }
+  
+  // TODO: Make issue names uniue within a project
 }

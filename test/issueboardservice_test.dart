@@ -9,6 +9,7 @@ void main() {
   // IssueBoardService tests
   test('calling getAllIssues on issueBoardService returns all issues as an IssueBoard', (){
     // Arrange
+    var pageInfo = new PageInfo(0, 2);
     var issues = new List<Issue>()
       ..add(new Issue (dueDate: new DateTime.now()))
       ..add(new Issue (dueDate: new DateTime.now()));
@@ -19,7 +20,7 @@ void main() {
     IssueBoardService issueBoardService = new IssueBoardService(issueStore);
     
     // Act
-    IssueBoard board = issueBoardService.getAllIssues(null);
+    IssueBoard board = issueBoardService.getAllIssues(pageInfo);
     
     // Assert
     assert(board.issues != null);
@@ -28,6 +29,7 @@ void main() {
   
   test('calling getAllIssues on issueBoardService returns all issues as an IssueBoard ordered by dueDate descending.', (){
     // Arrange
+    var pageInfo = new PageInfo(0, 2);
     var issues = new List<Issue>()
       ..add(new Issue (dueDate: DateTime.parse('2014-11-13 14:59:00')))
       ..add(new Issue (dueDate: DateTime.parse('2014-11-13 17:59:00')));
@@ -38,7 +40,7 @@ void main() {
     IssueBoardService issueBoardService = new IssueBoardService(issueStore);
     
     // Act
-    IssueBoard board = issueBoardService.getAllIssues(null);
+    IssueBoard board = issueBoardService.getAllIssues(pageInfo);
     
     // Assert
     assert(board.issues.length == issues.length);
@@ -49,6 +51,7 @@ void main() {
   test('calling getIssueByName on IssueBoardService returns all issues as an IssueBoard with name', () {
     
     // Arrange
+    var pageInfo = new PageInfo(0, 2);
     var issues = new List<Issue>()
       ..add(new Issue (title: 'Create blah'))
       ..add(new Issue (title: 'Create blah feature'))
@@ -60,7 +63,7 @@ void main() {
     IssueBoardService issueBoardService = new IssueBoardService(issueStore);
         
     // Act
-    IssueBoard board = issueBoardService.getIssuesByName('Create', null);
+    IssueBoard board = issueBoardService.getIssuesByName('Create', pageInfo);
     
     // Assert
     assert(board.issues.length == 2);
@@ -68,6 +71,7 @@ void main() {
   
   test('calling getIssuesByProjectName on IssueBoardService returns all issues filtered by project name', () {
     // Arrange
+    var pageInfo = new PageInfo(0, 2);
     var projects = new List<Project>()
       ..add(new Project(name: 'Project 1'))
       ..add(new Project(name: 'Project 2'));
@@ -84,7 +88,7 @@ void main() {
     IssueBoardService issueBoardService = new IssueBoardService(store);  
         
     // Act
-    IssueBoard board = issueBoardService.getIssuesByProjectName('Project 1', null);    
+    IssueBoard board = issueBoardService.getIssuesByProjectName('Project 1', pageInfo);    
         
     // Assert
     assert(board.issues.length == 1);
@@ -154,7 +158,7 @@ void main() {
     assert(board.issues.length == pageInfo.pageSize);
   });
   
-  test('retrieving IssueBoard via getAllIssues limits results set to specified page size and sets paging metadata', () {
+  test('retrieving IssueBoard via getAllIssues sets paging metadata', () {
       // Arrange
       var pageInfo = new PageInfo(0, 2);
       var issues = new List<Issue>()
@@ -176,7 +180,7 @@ void main() {
       expect(board.searchQueryArgs, orderedEquals([]));
     });
     
-    test('retrieving IssueBoard via getIssuesByName limits results set to specified page size and sets paging metadata', () {
+    test('retrieving IssueBoard via getIssuesByName sets paging metadata', () {
       // Arrange
       var pageInfo = new PageInfo(0, 2);
       String searchTerm = 'Issue';
@@ -200,7 +204,7 @@ void main() {
       expect(board.searchQueryArgs, orderedEquals([searchTerm]));
     });
     
-    test('retrieving IssueBoard via getIssuesByprojectName limits results set to specified page size and sets paging metadata', () {
+    test('retrieving IssueBoard via getIssuesByprojectName sets paging metadata', () {
       // Arrange
       var pageInfo = new PageInfo(0, 2);
       String projectName = 'Project 1';
@@ -226,8 +230,107 @@ void main() {
       assert(board.searchQueryMethod == #getIssuesByProjectName);
       expect(board.searchQueryArgs, orderedEquals([projectName]));
     });
+
+
+  test('retrieving IssueBoard via getAllIssues skip results based on skip count', () {
+        // Arrange
+        var pageInfo = new PageInfo(4, 2);
+        var issues = new List<Issue>()
+              ..add(new Issue (title: 'Issue 1', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+              ..add(new Issue (title: 'Issue 2', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+              ..add(new Issue (title: 'Issue 3', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+              ..add(new Issue (title: 'Issue 4', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+              ..add(new Issue (title: 'Issue 5', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+              ..add(new Issue (title: 'Issue 6', dueDate: DateTime.parse('2014-11-13 14:59:00')));
+        
+        var store = new StoreMock()
+              ..when(callsTo('getAllIssues')).alwaysReturn(issues);
+
+        IssueBoardService issueBoardService = new IssueBoardService(store);  
+        
+        // Act
+        IssueBoard board = issueBoardService.getAllIssues(pageInfo);
+        
+        // Assert
+        assert(board.issues.length == 2);
+        assert(board.issues[0] == issues[4]);
+        assert(board.issues[1] == issues[5]);
+      });
   
-  test('calling GetNextPage on the IssueBoard service will retrieve the set of results limited to the specified page size', () {
+  test('calling getAllIssues on the IssueBoardService with no pageInfo will throw ArgumentError', () {
+    // Act, Assert
+    expect(() => new IssueBoardService(null).getAllIssues(null), throwsArgumentError);
+  });
+  
+  test('calling getIssuesByName on the IssueBoardService with no pageInfo will throw ArgumentError', () {
+    // Act, Assert
+    expect(() => new IssueBoardService(null).getIssuesByName(null, null), throwsArgumentError);
+  });
+  
+  test('calling getIssuesByProjectName on the IssueBoardService with no pageInfo will throw ArgumentError', () {
+    // Act, Assert
+    expect(() => new IssueBoardService(null).getIssuesByProjectName(null, null), throwsArgumentError);
+  });
+  
+  test('retrieving IssueBoard via getIssuesByName skip results based on skip count', () {
+        // Arrange
+        var pageInfo = new PageInfo(4, 2);
+        String searchTerm = 'Issue';
+        
+        var issues = new List<Issue>()
+              ..add(new Issue (title: 'Issue 1', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+              ..add(new Issue (title: 'Issue 2', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+              ..add(new Issue (title: 'Issue 3', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+              ..add(new Issue (title: 'Issue 4', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+              ..add(new Issue (title: 'Issue 5', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+              ..add(new Issue (title: 'Issue 6', dueDate: DateTime.parse('2014-11-13 14:59:00')));
+        
+        var store = new StoreMock()
+              ..when(callsTo('getAllIssues')).alwaysReturn(issues);
+
+        IssueBoardService issueBoardService = new IssueBoardService(store);  
+        
+        // Act
+        IssueBoard board = issueBoardService.getIssuesByName(searchTerm, pageInfo);
+        
+        // Assert
+        assert(board.issues.length == 2);
+        assert(board.issues[0] == issues[4]);
+        assert(board.issues[1] == issues[5]);
+      });
+  
+
+    test('retrieving IssueBoard via getIssuesByprojectName sets paging metadata', () {
+      // Arrange
+      var pageInfo = new PageInfo(4, 2);
+      String projectName = 'Project 1';
+      var projects = new List<Project>()
+            ..add(new Project(name: 'Project 1'));
+     
+      var issues = new List<Issue>()
+           ..add(new Issue (title: 'Issue 1', projectName: 'Project 1'))
+           ..add(new Issue (title: 'Issue 2', projectName: 'Project 1'))
+           ..add(new Issue (title: 'Issue 3', projectName: 'Project 1'))
+           ..add(new Issue (title: 'Issue 4', projectName: 'Project 1'))
+           ..add(new Issue (title: 'Issue 5', projectName: 'Project 1'))
+           ..add(new Issue (title: 'Issue 6', projectName: 'Project 1'));
+     
+      var store = new StoreMock()
+          ..when(callsTo('getAllIssues')).alwaysReturn(issues)
+          ..when(callsTo('getAllProjects')).alwaysReturn(projects);
+     
+      IssueBoardService issueBoardService = new IssueBoardService(store);  
+         
+      // Act
+      IssueBoard board = issueBoardService.getIssuesByProjectName(projectName, pageInfo);
+      
+      // Assert
+      assert(board.issues.length == 2);
+      assert(board.issues[0] == issues[4]);
+      assert(board.issues[1] == issues[5]);
+    });
+    
+  test('calling getNextPage on the IssueBoard service will retrieve the next set of results limited to the specified page size and sets skipCount', () {
     // Arrange
     var pageInfo = new PageInfo(0, 2);
     var issues = new List<Issue>()
@@ -246,14 +349,63 @@ void main() {
     IssueBoard nextPageBoard = issueBoardService.getNextPage(board); 
     
     // Assert
-    assert(board.issues.length == pageInfo.pageSize);
     assert(nextPageBoard.issues.length == pageInfo.pageSize);
+    assert(nextPageBoard.pageInfo.skipCount == 2);
     
-    assert(board.issues[0].title == issues[0].title);
-    assert(board.issues[1].title == issues[1].title);
-    assert(nextPageBoard.issues[0].title == issues[2].title);
-    assert(nextPageBoard.issues[1].title == issues[3].title);
+    assert(board.issues[0] == issues[0]);
+    assert(board.issues[1] == issues[1]);
+    assert(nextPageBoard.issues[0] == issues[2]);
+    assert(nextPageBoard.issues[1] == issues[3]);
     
+  });
+  
+  test('calling getPreviousPage on the IssueBoard service will retrieve the previous set of results limited to the specified page size', () {
+    // Arrange
+     var pageInfo = new PageInfo(0, 2);
+     var issues = new List<Issue>()
+           ..add(new Issue (title: 'Issue 1', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+           ..add(new Issue (title: 'Issue 2', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+           ..add(new Issue (title: 'Issue 3', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+           ..add(new Issue (title: 'Issue 4', dueDate: DateTime.parse('2014-11-13 14:59:00')));
+     
+     var store = new StoreMock()
+           ..when(callsTo('getAllIssues')).alwaysReturn(issues);
+    
+     IssueBoardService issueBoardService = new IssueBoardService(store);
+     IssueBoard initialBoard = issueBoardService.getAllIssues(pageInfo);
+     IssueBoard nextPageBoard = issueBoardService.getNextPage(initialBoard); 
+     
+     // Act
+     IssueBoard previousPageBoard = issueBoardService.getPreviousPage(nextPageBoard); 
+
+     // Assert
+     assert(previousPageBoard.issues.length == pageInfo.pageSize);
+     assert(previousPageBoard.pageInfo.skipCount == 0);
+     
+     assert(initialBoard.issues[0] == previousPageBoard.issues[0]);
+     assert(initialBoard.issues[1] == previousPageBoard.issues[1]);
+  });
+  
+  test('calling getPreviousPage on the IssueBoard service multiple times will never let skip count be less than zero', () {
+    
+     var pageInfo = new PageInfo(0, 2);
+     var issues = new List<Issue>()
+           ..add(new Issue (title: 'Issue 1', dueDate: DateTime.parse('2014-11-13 14:59:00')))
+           ..add(new Issue (title: 'Issue 2', dueDate: DateTime.parse('2014-11-13 14:59:00')));
+     
+     var store = new StoreMock()
+           ..when(callsTo('getAllIssues')).alwaysReturn(issues);
+    
+     IssueBoardService issueBoardService = new IssueBoardService(store);
+     IssueBoard board = issueBoardService.getAllIssues(pageInfo);
+
+     // Act
+     IssueBoard previousPageBoard = issueBoardService.getPreviousPage(board); 
+     
+     // Assert
+     assert(board.issues[0] == previousPageBoard.issues[0]);
+     assert(board.issues[1] == previousPageBoard.issues[1]);
   });
 }
 
+  

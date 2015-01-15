@@ -9,7 +9,5 @@ class IssueBoard {
   // Data
   List<Issue> issues;
   
-  IssueBoard(this.issues);
-  
-  IssueBoard.withPaging(this.pageInfo, this.searchQueryMethod, this.searchQueryArgs, this.issues);
+  IssueBoard(this.pageInfo, this.searchQueryMethod, this.searchQueryArgs, this.issues);
 }

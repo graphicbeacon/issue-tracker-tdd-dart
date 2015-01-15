@@ -7,25 +7,31 @@ class IssueBoardService {
   IssueBoardService(this.store);
   
   IssueBoard getAllIssues(PageInfo pageInfo) {
+    if (pageInfo == null) throw new ArgumentError("PageInfo is mandatory");
+    
     var issues = store.getAllIssues();
     
     issues.sort((a,b) => b.dueDate.compareTo(a.dueDate));
     
-    return pageInfo != null 
-        ? new IssueBoard.withPaging(pageInfo, #getAllIssues, [], issues.take(pageInfo.pageSize).toList())
-        : new IssueBoard(issues);
+    return new IssueBoard(pageInfo, #getAllIssues, [], 
+            issues.skip(pageInfo.skipCount).take(pageInfo.pageSize).toList());
   }
   
   IssueBoard getIssuesByName(String name, PageInfo pageInfo) {
+    if (name == null || name.isEmpty) throw new ArgumentError("Name is mandatory");
+    if (pageInfo == null) throw new ArgumentError("PageInfo is mandatory");
+    
     List<Issue> issues = store.getAllIssues();
     var issueFilter = issues.where((Issue issue) => issue.title.contains(name));
     
-    return pageInfo != null 
-        ? new IssueBoard.withPaging(pageInfo, #getIssuesByName, [name], issueFilter.take(pageInfo.pageSize).toList())
-        : new IssueBoard(issueFilter.toList());
+    return new IssueBoard(pageInfo, #getIssuesByName, [name], 
+            issueFilter.skip(pageInfo.skipCount).take(pageInfo.pageSize).toList());
   }
   
   IssueBoard getIssuesByProjectName(String projectName, PageInfo pageInfo) {
+    if (projectName == null || projectName.isEmpty) throw new ArgumentError("Project name is mandatory");
+    if (pageInfo == null) throw new ArgumentError("PageInfo is mandatory");
+    
     Project project = store
         .getAllProjects()
         .singleWhere((Project project) => project.name.toLowerCase() == projectName.toLowerCase());
@@ -35,16 +41,13 @@ class IssueBoardService {
         .where((Issue issue) => issue.projectName == project.name)
         .toList();
     
-    return pageInfo != null
-        ? new IssueBoard.withPaging(pageInfo, #getIssuesByProjectName, [projectName], issues.take(pageInfo.pageSize).toList())
-        : new IssueBoard(issues);
+    return new IssueBoard(pageInfo, #getIssuesByProjectName, [projectName], 
+            issues.skip(pageInfo.skipCount).take(pageInfo.pageSize).toList());
   }
   
   IssueBoard getNextPage(IssueBoard issueBoard) {
-    // TODO: PageSize may be null
     
     var resultsToSkip = (issueBoard.pageInfo.pageSize + issueBoard.pageInfo.skipCount);
-    
     
     issueBoard.searchQueryArgs
         ..add(new PageInfo(resultsToSkip, issueBoard.pageInfo.pageSize));
@@ -55,4 +58,17 @@ class IssueBoardService {
     return result.reflectee as IssueBoard;
   }
   
+  IssueBoard getPreviousPage(IssueBoard issueBoard) {
+    var resultsToSkip = (issueBoard.pageInfo.skipCount - issueBoard.pageInfo.pageSize);
+    
+    if (resultsToSkip < 0) resultsToSkip = 0;
+    
+    issueBoard.searchQueryArgs
+        ..add(new PageInfo(resultsToSkip, issueBoard.pageInfo.pageSize));
+    
+    var thisInstance = reflect(this);
+    var result = thisInstance.invoke(issueBoard.searchQueryMethod, issueBoard.searchQueryArgs);
+    
+    return result.reflectee as IssueBoard;
+  }
 }
