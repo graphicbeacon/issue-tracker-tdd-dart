@@ -22,4 +22,6 @@ class IssueService {
   }
   
   // TODO: Make issue names unique within a project
+  // TODO: Pass token when issues are created
+  // TODO: Save attachments
 }

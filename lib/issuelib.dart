@@ -4,6 +4,7 @@ import 'dart:mirrors';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'dart:math';
+import 'package:uuid/uuid.dart';
 
 part 'issue.dart';
 part 'issueboard.dart';
@@ -19,3 +20,4 @@ part 'user.dart';
 part 'authenticationservice.dart';
 part 'hashingmanager.dart';
 part 'sha256hashingmanager.dart';
+part 'usersession.dart';
