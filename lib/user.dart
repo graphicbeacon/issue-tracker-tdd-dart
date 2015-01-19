@@ -6,5 +6,8 @@ class User {
   String userName;
   String plainTextPassword;
   
+  String passwordSalt;
+  String passwordHash;
+  
   User(this.firstName, this.lastName, this.userName, this.plainTextPassword);
 }

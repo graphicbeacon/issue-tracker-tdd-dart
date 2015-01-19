@@ -17,3 +17,5 @@ part 'pageinfo.dart';
 part 'pagemanager.dart';
 part 'user.dart';
 part 'authenticationservice.dart';
+part 'hashingmanager.dart';
+part 'sha256hashingmanager.dart';
