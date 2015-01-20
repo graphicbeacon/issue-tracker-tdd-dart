@@ -23,6 +23,9 @@ class AuthenticationService {
   
   String login(String username, String plainTextPassword){
     var user = this.store.getUser(username);
+    if(user == null)
+      throw new ArgumentError("Could not find user in our system");
+    
     var passwordHash = this.hashingManager.generateHash(plainTextPassword, user.passwordSalt);
     
     if (passwordHash != user.passwordHash)

@@ -21,3 +21,4 @@ part 'authenticationservice.dart';
 part 'hashingmanager.dart';
 part 'sha256hashingmanager.dart';
 part 'usersession.dart';
+part 'attachment.dart';

@@ -183,7 +183,20 @@ void main() {
     store.getLogs(callsTo('storeUser', expectedUser)).verify(happenedOnce);
     
   });
+
   
+  test('calling login on the AuthenticationService will throw ArgumentError when user does not exist', () {
+      // Arrange    
+      var store = new StoreMock()
+        ..when(callsTo('getUser')).alwaysReturn(null);
+      
+      var hashingManager = new HashingManagerMock();
+      
+      var authenticationService = new AuthenticationService(store, hashingManager);
+      
+      // Act, Assert
+      expect(() => authenticationService.login('bob', 'password'), throwsArgumentError);
+    });
   
   
 }
