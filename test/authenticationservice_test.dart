@@ -7,7 +7,7 @@ import 'mocks.dart';
 
 void main() {
  
-  test('calling createUser on AuthenticationService will store user information', () {
+  test('calling createUser on AuthenticationService will store user information', () async {
     // Arrange
     var store = new StoreMock()
         ..when(callsTo('hasUser')).alwaysReturn(false);
@@ -17,13 +17,13 @@ void main() {
     var authenticationService = new AuthenticationService(store, hashingManager);
     
     // Act
-    authenticationService.createUser(user);
+    await authenticationService.createUser(user);
     
     // Assert
     store.getLogs(callsTo('storeUser')).verify(happenedOnce);
   });
   
-  test('calling createUser on AuthenticationService will hash password prior to storing', () {
+  test('calling createUser on AuthenticationService will hash password prior to storing', () async {
     // Arrange
     const expectedSalt = 'Salt';
     const expectedHash = 'Pepper';
@@ -40,7 +40,7 @@ void main() {
     var authenticationService = new AuthenticationService(store, hashingManager);
      
     // Act
-    authenticationService.createUser(user);
+    await authenticationService.createUser(user);
      
     // Assert
     hashingManager.getLogs(callsTo('generateSalt')).verify(happenedOnce);
@@ -50,7 +50,7 @@ void main() {
     assert(user.passwordHash == expectedHash);
   });
   
-  test('calling login on the AuthenticationService will login user and return token', () {
+  test('calling login on the AuthenticationService will login user and return token', () async {
     // Arrange
     var user = new User('first','last','user','pass')
             ..passwordSalt = 'salt';
@@ -64,14 +64,14 @@ void main() {
     var authenticationService = new AuthenticationService(store, hashingManager);
     
     // Act
-    var token = authenticationService.login('username', 'plainTextPassword');
+    var token = await authenticationService.login('username', 'plainTextPassword');
     
     // Assert
     store.getLogs(callsTo('storeUserSession')).verify(happenedOnce);
     assert(uuid.parse(token).length == 16);
   });
   
-  test('calling login on the AuthenticationService will store user session information', () {
+  test('calling login on the AuthenticationService will store user session information', () async {
       // Arrange
       const username = 'username';
       var user = new User('first','last','user','pass')
@@ -85,14 +85,14 @@ void main() {
       var authenticationService = new AuthenticationService(store, hashingManager);
       
       // Act
-      var token = authenticationService.login(username, 'plainTextPassword');
+      var token = await authenticationService.login(username, 'plainTextPassword');
       
       // Assert
       var userSession = new UserSession(token, username);
       store.getLogs(callsTo('storeUserSession', userSession)).verify(happenedOnce);
     });
   
-  test('calling login on the AuthenticationService will check password against hash', () {
+  test('calling login on the AuthenticationService will check password against hash', () async {
       // Arrange
       var password = 'pasword123';
       var user = new User('', '', 'myUserName', '')
@@ -108,14 +108,14 @@ void main() {
       var authenticationService = new AuthenticationService(store, hashingManager);
       
       // Act
-      var token = authenticationService.login(user.username, password);
+      var token = await authenticationService.login(user.username, password);
       
       // Assert
       store.getLogs(callsTo('getUser', user.username)).verify(happenedOnce);
       hashingManager.getLogs(callsTo('generateHash', password, user.passwordSalt)).verify(happenedOnce);
     });
   
-  test('calling login on the AuthenticationService will throw ArgumentError when password does not match hash', () {
+  test('calling login on the AuthenticationService will throw ArgumentError when password does not match hash', () async {
       // Arrange
       var password = 'pasword123';
       var user = new User('', '', 'myUserName', '')
@@ -131,10 +131,15 @@ void main() {
       var authenticationService = new AuthenticationService(store, hashingManager);
       
       // Act, Assert
-      expect(() => authenticationService.login(user.username, password), throwsArgumentError);
+      try {
+        await authenticationService.login(user.username, password);
+        assert(false); // Ensure that catch block gets hit
+      } catch(e) {
+        assert(e is ArgumentError);
+      }
     });
   
-  test('calling logoff on the AuthenticationService will remove UserSession from store', () {
+  test('calling logoff on the AuthenticationService will remove UserSession from store', () async {
     // Arrange
     var sessionToken = 'myToken';
     
@@ -144,13 +149,13 @@ void main() {
     var authenticationService = new AuthenticationService(store, hashingManager);
     
     // Act
-    authenticationService.logout(sessionToken);
+    await authenticationService.logout(sessionToken);
     
     // Assert
     store.getLogs(callsTo('deleteUserSession', sessionToken)).verify(happenedOnce);
   });
 
-  test('calling createUser on the AuthenticationService will throw error is username is not unique', () {
+  test('calling createUser on the AuthenticationService will throw error is username is not unique', () async {
     // Arrange
     var user = new User('', '', 'myUserName', '');
   
@@ -161,11 +166,15 @@ void main() {
     var authenticationService = new AuthenticationService(store, hashingManager);
     
     // Act, Assert
-    expect(() => authenticationService.createUser(user), throwsArgumentError);
-    
+    try {
+      await authenticationService.createUser(user);
+      assert(false); // Ensure that catch block gets hit
+    } catch(e) {
+      assert(e is ArgumentError);
+    }
   });
 
-  test('calling createUser on the AuthenticationService will not store password as plain text', () {
+  test('calling createUser on the AuthenticationService will not store password as plain text', () async {
     // Arrange
     var user = new User('first', 'last', 'myUserName', 'plainTextPassword');
     var expectedUser = new User(user.firstName, user.lastName, user.username, '');
@@ -177,7 +186,7 @@ void main() {
     var authenticationService = new AuthenticationService(store, hashingManager);
     
     // Act
-    authenticationService.createUser(user);
+    await authenticationService.createUser(user);
     
     // Assert
     store.getLogs(callsTo('storeUser', expectedUser)).verify(happenedOnce);
@@ -185,18 +194,23 @@ void main() {
   });
 
   
-  test('calling login on the AuthenticationService will throw ArgumentError when user does not exist', () {
-      // Arrange    
-      var store = new StoreMock()
-        ..when(callsTo('getUser')).alwaysReturn(null);
-      
-      var hashingManager = new HashingManagerMock();
-      
-      var authenticationService = new AuthenticationService(store, hashingManager);
-      
-      // Act, Assert
-      expect(() => authenticationService.login('bob', 'password'), throwsArgumentError);
-    });
+  test('calling login on the AuthenticationService will throw ArgumentError when user does not exist', () async {
+    // Arrange    
+    var store = new StoreMock()
+      ..when(callsTo('getUser')).alwaysReturn(null);
+    
+    var hashingManager = new HashingManagerMock();
+    
+    var authenticationService = new AuthenticationService(store, hashingManager);
+    
+    // Act, Assert
+    try {
+      await authenticationService.login('bob', 'password');
+      assert(false); // Ensure that catch block gets hit
+    } catch (e) {
+      assert(e is ArgumentError);
+    }
+  });
   
   
 }

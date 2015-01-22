@@ -8,7 +8,7 @@ void main() {
   
 
     
-  test('calling getNextPage on the IssueBoard service will retrieve the next set of results limited to the specified page size and sets skipCount', () {
+  test('calling getNextPage on the IssueBoard service will retrieve the next set of results limited to the specified page size and sets skipCount', () async {
     // Arrange
     var pageInfo = new PageInfo(0, 2);
     var issues = new List<Issue>()
@@ -22,10 +22,10 @@ void main() {
 
     IssueBoardService issueBoardService = new IssueBoardService(store);
     PageManager pageManager = new PageManager(issueBoardService);
-    IssueBoard board = issueBoardService.getAllIssues(pageInfo);
+    IssueBoard board = await issueBoardService.getAllIssues(pageInfo);
     
     // Act
-    IssueBoard nextPageBoard = pageManager.getNextPage(board); 
+    IssueBoard nextPageBoard = await pageManager.getNextPage(board); 
     
     // Assert
     assert(nextPageBoard.issues.length == pageInfo.pageSize);
@@ -38,7 +38,7 @@ void main() {
     
   });
   
-  test('calling getPreviousPage on the IssueBoard service will retrieve the previous set of results limited to the specified page size', () {
+  test('calling getPreviousPage on the IssueBoard service will retrieve the previous set of results limited to the specified page size', () async {
     // Arrange
      var pageInfo = new PageInfo(0, 2);
      var issues = new List<Issue>()
@@ -52,11 +52,11 @@ void main() {
     
      IssueBoardService issueBoardService = new IssueBoardService(store);
      PageManager pageManager = new PageManager(issueBoardService);
-     IssueBoard initialBoard = issueBoardService.getAllIssues(pageInfo);
-     IssueBoard nextPageBoard = pageManager.getNextPage(initialBoard); 
+     IssueBoard initialBoard = await issueBoardService.getAllIssues(pageInfo);
+     IssueBoard nextPageBoard = await pageManager.getNextPage(initialBoard); 
      
      // Act
-     IssueBoard previousPageBoard = pageManager.getPreviousPage(nextPageBoard); 
+     IssueBoard previousPageBoard = await pageManager.getPreviousPage(nextPageBoard); 
 
      // Assert
      assert(previousPageBoard.issues.length == pageInfo.pageSize);
@@ -66,7 +66,7 @@ void main() {
      assert(initialBoard.issues[1] == previousPageBoard.issues[1]);
   });
   
-  test('calling getPreviousPage on the IssueBoard service multiple times will never let skip count be less than zero', () {
+  test('calling getPreviousPage on the IssueBoard service multiple times will never let skip count be less than zero', () async {
     
      var pageInfo = new PageInfo(0, 2);
      var issues = new List<Issue>()
@@ -78,10 +78,10 @@ void main() {
     
      IssueBoardService issueBoardService = new IssueBoardService(store);
      PageManager pageManager = new PageManager(issueBoardService);
-     IssueBoard board = issueBoardService.getAllIssues(pageInfo);
+     IssueBoard board = await issueBoardService.getAllIssues(pageInfo);
 
      // Act
-     IssueBoard previousPageBoard = pageManager.getPreviousPage(board); 
+     IssueBoard previousPageBoard = await pageManager.getPreviousPage(board); 
      
      // Assert
      assert(board.issues[0] == previousPageBoard.issues[0]);

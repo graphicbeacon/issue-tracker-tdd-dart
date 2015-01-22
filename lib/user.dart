@@ -1,13 +1,13 @@
 part of issuelib;
 
-class User {
-  String firstName;
-  String lastName;
-  String username;
-  String plainTextPassword;
+class User extends Object with Exportable {
+  @export String firstName;
+  @export String lastName;
+  @export String username;
+  @export String plainTextPassword;
   
-  String passwordSalt;
-  String passwordHash;
+  @export String passwordSalt;
+  @export String passwordHash;
   
   User(this.firstName, this.lastName, this.username, this.plainTextPassword);
   

@@ -1,8 +1,8 @@
 part of issuelib;
 
-class Project {
-  String name;
-  String description;
+class Project extends Object with Exportable {
+  @export String name;
+  @export String description;
   
   Project({String this.name, String this.description});
   

@@ -5,15 +5,15 @@ class ProjectService {
     
   ProjectService(this.store);
   
-  void createProject(String name, String description) {
-    if (store.hasProject(name))
+  Future createProject(String name, String description) async {
+    if (await store.hasProject(name))
       throw new ArgumentError("Name must be unique");
     
     var project = new Project(
         name: name,
         description:description);
     
-    store.storeProject(project);
+    await store.storeProject(project);
   }
  
 }

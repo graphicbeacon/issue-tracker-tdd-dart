@@ -1,9 +1,9 @@
 part of issuelib;
 
-class UserSession {
+class UserSession extends Object with Exportable {
   
-  String sessionToken;
-  String username;
+  @export String sessionToken;
+  @export String username;
   
   UserSession(String this.sessionToken, String this.username);
   

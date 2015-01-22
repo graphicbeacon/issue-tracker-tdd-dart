@@ -6,7 +6,7 @@ import 'mocks.dart';
 
 void main() {
   
-  test('calling createIssue on IssueService stores issue', () {
+  test('calling createIssue on IssueService stores issue', () async {
     
     // Arrange
     var user = new User('Bob', 'Doe', 'bob', '');
@@ -27,13 +27,13 @@ void main() {
     String projectName = '';
     
     // Act
-    issueService.createIssue(id, title, description, dueDate, issueStatus, projectName, '');
+    await issueService.createIssue(id, title, description, dueDate, issueStatus, projectName, '');
     
     // Assert
     issueStore.getLogs(callsTo('storeIssue')).verify(happenedOnce);
   });
   
-  test('calling createIssue on IssueService stores issue with correct values', () {
+  test('calling createIssue on IssueService stores issue with correct values', () async {
     
     // Arrange
     var user = new User('Bob', 'Doe', 'bob', '');
@@ -59,14 +59,14 @@ void main() {
     IssueService issueService = new IssueService(issueStore, '');
     
     // Act
-    issueService.createIssue(expectedIssue.id, expectedIssue.title, expectedIssue.description, 
+    await issueService.createIssue(expectedIssue.id, expectedIssue.title, expectedIssue.description, 
         expectedIssue.dueDate, expectedIssue.status, expectedIssue.projectName, '');
      
     // Assert
     issueStore.getLogs(callsTo('storeIssue', expectedIssue)).verify(happenedOnce);
   });
   
-  test('calling createIssue on IssueService throws if the specified project name does not exist in store', () {
+  test('calling createIssue on IssueService throws if the specified project name does not exist in store', () async {
     
       // Arrange
       var issueStore = new StoreMock()
@@ -82,11 +82,15 @@ void main() {
       String projectName = 'Project 1';
         
       // Act, Assert
-      expect(() => issueService.createIssue('123', title, description, dueDate, issueStatus, projectName, ''),
-          throwsArgumentError);
+      try {
+        await issueService.createIssue('123', title, description, dueDate, issueStatus, projectName, '');
+        assert(false); // Ensure that catch block gets hit
+      } catch(e) {
+        assert(e is ArgumentError);
+      }
     });
   
-  test('calling createIssue on IssueService takes in UserSession token and populates createdBy and assignedTo fields', () {
+  test('calling createIssue on IssueService takes in UserSession token and populates createdBy and assignedTo fields', () async {
     // Arrange
     var user = new User('Bob', 'Doe', 'bob', '');
     var userSession = new UserSession('token', user.username);
@@ -111,14 +115,14 @@ void main() {
     IssueService issueService = new IssueService(issueStore, '');
     
     // Act
-    issueService.createIssue('123', expectedIssue.title, expectedIssue.description, 
+    await issueService.createIssue('123', expectedIssue.title, expectedIssue.description, 
         expectedIssue.dueDate, expectedIssue.status, expectedIssue.projectName, userSession.sessionToken);
     
     // Assert
     issueStore.getLogs(callsTo('storeIssue', expectedIssue)).verify(happenedOnce);
   });
   
-  test('calling createIssue on IssueService will throw an exception when the user is not signed in', () {
+  test('calling createIssue on IssueService will throw an exception when the user is not signed in', () async {
      // Arrange
      var userSession = new UserSession('token', 'Bob');
     
@@ -139,12 +143,17 @@ void main() {
      IssueService issueService = new IssueService(issueStore, '');
      
      // Act, Assert
-     expect(() => issueService.createIssue(issue.id, issue.title, issue.description, 
-         issue.dueDate, issue.status, issue.projectName, userSession.sessionToken), throwsArgumentError);
+     try {
+       await issueService.createIssue(issue.id, issue.title, issue.description, 
+           issue.dueDate, issue.status, issue.projectName, userSession.sessionToken);
+       assert(false); // Ensure that catch block gets hit
+     } catch(e) {
+       assert(e is ArgumentError);
+     }
      
   });
   
-  test('calling createIssue on IssueService will throw an exception when id already exists', () {
+  test('calling createIssue on IssueService will throw an exception when id already exists', () async {
       // Arrange
       var userSession = new UserSession('token', 'Bob');
        
@@ -163,11 +172,16 @@ void main() {
       IssueService issueService = new IssueService(issueStore, '');
       
       // Act, Assert
-      expect(() => issueService.createIssue(issue.id, issue.title, issue.description, 
-          issue.dueDate, issue.status, issue.projectName, userSession.sessionToken), throwsArgumentError);
+      try {
+        await issueService.createIssue(issue.id, issue.title, issue.description, 
+            issue.dueDate, issue.status, issue.projectName, userSession.sessionToken);
+        assert(false); // Ensure that catch block gets hit
+      } catch(e) {
+        assert(e is ArgumentError);
+      }
   });
   
-  test('saving saveAttachment on IssueService will populate the attachment list on the issue object', () {
+  test('saving saveAttachment on IssueService will populate the attachment list on the issue object', () async {
       // Arrange
       const fileName = 'file';
            
@@ -188,17 +202,17 @@ void main() {
       IssueService issueService = new IssueService(issueStore, '');
       
       // Act
-      issueService.saveAttachment(issue.id, '', fileName);
+      await issueService.saveAttachment(issue.id, '', fileName);
       
       // Assert
       issueStore.getLogs(callsTo('getIssue')).verify(happenedOnce);
-      issueStore.getLogs(callsTo('updateIssue')).verify(happenedOnce);
+      issueStore.getLogs(callsTo('storeIssue')).verify(happenedOnce);
 
       assert(issue.attachments.length == 1);
       assert(issue.attachments[0].name == fileName);
   });
   
-  test('saving saveAttachment on IssueService will throw error if issue id does not exist', () {
+  test('saving saveAttachment on IssueService will throw error if issue id does not exist', () async {
       // Arrange      
       var issueStore = new StoreMock()
           ..when(callsTo('getIssue')).alwaysReturn(null)
@@ -207,11 +221,15 @@ void main() {
       IssueService issueService = new IssueService(issueStore, '');
       
       // Act, Assert
-      expect(() => issueService.saveAttachment('123', '', 'file name'), throwsArgumentError);
-
+      try {
+        await issueService.saveAttachment('123', '', 'file name');
+        assert(false); // Ensure that catch block gets hit
+      } catch(e) {
+        assert(e is ArgumentError);
+      }
   });
   
-  test('saving saveAttachment on IssueService will throw error if user session does not exist', () {
+  test('saving saveAttachment on IssueService will throw error if user session does not exist', () async {
       // Arrange     
       const sessionToken = 'token';
       var issueStore = new StoreMock()
@@ -221,11 +239,16 @@ void main() {
       IssueService issueService = new IssueService(issueStore, '');
       
       // Act, Assert
-      expect(() => issueService.saveAttachment('123', sessionToken, 'file name'), throwsArgumentError);
+      try {
+        await issueService.saveAttachment('123', sessionToken, 'file name');
+        assert(false); // Ensure that catch block gets hit
+      } catch(e) {
+        assert(e is ArgumentError); 
+      }
 
   });
   
-  test('saving saveAttachment on IssueService will set file location on attachment', () {
+  test('saving saveAttachment on IssueService will set file location on attachment', () async {
       // Arrange
       const fileName = 'file';
       const attachmentFilesDirectory = 'path/to/file';
@@ -247,7 +270,7 @@ void main() {
       IssueService issueService = new IssueService(issueStore, attachmentFilesDirectory);
       
       // Act
-      issueService.saveAttachment(issue.id, '', fileName);
+      await issueService.saveAttachment(issue.id, '', fileName);
       
       // Assert
       assert(issue.attachments.length == 1);

@@ -7,9 +7,9 @@ class AuthenticationService {
   
   AuthenticationService(this.store, this.hashingManager);
   
-  void createUser(User user) {
+  Future createUser(User user) async {
 
-    if(this.store.hasUser(user.username))
+    if(await this.store.hasUser(user.username))
       throw new ArgumentError('Username already exists');
     
     user.passwordSalt = this.hashingManager.generateSalt();
@@ -18,11 +18,11 @@ class AuthenticationService {
     /// Do not store plain text password   
     user.plainTextPassword = '';
     
-    this.store.storeUser(user);
+    await this.store.storeUser(user);
   }
   
-  String login(String username, String plainTextPassword){
-    var user = this.store.getUser(username);
+  Future<String> login(String username, String plainTextPassword) async {
+    var user = await this.store.getUser(username);
     if(user == null)
       throw new ArgumentError("Could not find user in our system");
     
@@ -40,7 +40,7 @@ class AuthenticationService {
     return sessionToken;
   }
   
-  void logout(String sessionToken){
-    this.store.deleteUserSession(sessionToken);
+  Future logout(String sessionToken) async {
+    await this.store.deleteUserSession(sessionToken);
   }
 }

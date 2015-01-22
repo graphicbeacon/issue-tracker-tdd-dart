@@ -3,21 +3,20 @@ part of issuelib;
 abstract class Store {
   // Commands
   Future storeIssue(Issue issue);
-  void storeProject(Project project);
-  void storeUser(User user);
-  void storeUserSession(UserSession userSession);
-  void deleteUserSession(String sessionToken);
-  void updateIssue(String id, Issue issue);
+  Future storeProject(Project project);
+  Future storeUser(User user);
+  Future storeUserSession(UserSession userSession);
+  Future deleteUserSession(String sessionToken);
     
   // Queries
-  List<Issue> getAllIssues();
-  List<Project> getAllProjects();
-  Issue getIssue(String id);
-  User getUser(String username);
-  UserSession getUserSession(String sessionToken);
+  Future<List<Issue>> getAllIssues();
+  Future<List<Project>> getAllProjects();
+  Future<Issue> getIssue(String id);
+  Future<User> getUser(String username);
+  Future<UserSession> getUserSession(String sessionToken);
 
-  bool hasIssue(String id);
-  bool hasProject(String projectName);
-  bool hasUser(String username);
-  bool hasUserSession(String sessionToken);
+  Future<bool> hasIssue(String id);
+  Future<bool> hasProject(String projectName);
+  Future<bool> hasUser(String username);
+  Future<bool> hasUserSession(String sessionToken);
 }

@@ -7,7 +7,7 @@ import 'mocks.dart';
 void main() {
   
   // IssueBoardService tests
-  test('calling getAllIssues on issueBoardService returns all issues as an IssueBoard', (){
+  test('calling getAllIssues on issueBoardService returns all issues as an IssueBoard', () async {
     // Arrange
     var pageInfo = new PageInfo(0, 2);
     var issues = new List<Issue>()
@@ -20,14 +20,14 @@ void main() {
     IssueBoardService issueBoardService = new IssueBoardService(issueStore);
     
     // Act
-    IssueBoard board = issueBoardService.getAllIssues(pageInfo);
+    IssueBoard board = await issueBoardService.getAllIssues(pageInfo);
     
     // Assert
     assert(board.issues != null);
     assert(board.issues.length == issues.length);
   });
   
-  test('calling getAllIssues on issueBoardService returns all issues as an IssueBoard ordered by dueDate descending.', (){
+  test('calling getAllIssues on issueBoardService returns all issues as an IssueBoard ordered by dueDate descending.', () async {
     // Arrange
     var pageInfo = new PageInfo(0, 2);
     var issues = new List<Issue>()
@@ -40,7 +40,7 @@ void main() {
     IssueBoardService issueBoardService = new IssueBoardService(issueStore);
     
     // Act
-    IssueBoard board = issueBoardService.getAllIssues(pageInfo);
+    IssueBoard board = await issueBoardService.getAllIssues(pageInfo);
     
     // Assert
     assert(board.issues.length == issues.length);
@@ -48,7 +48,7 @@ void main() {
     assert(board.issues[1].dueDate.isAtSameMomentAs(issues[0].dueDate));
   });
   
-  test('calling getIssueByName on IssueBoardService returns all issues as an IssueBoard with name', () {
+  test('calling getIssueByName on IssueBoardService returns all issues as an IssueBoard with name', () async {
     
     // Arrange
     var pageInfo = new PageInfo(0, 2);
@@ -63,13 +63,13 @@ void main() {
     IssueBoardService issueBoardService = new IssueBoardService(issueStore);
         
     // Act
-    IssueBoard board = issueBoardService.getIssuesByName('Create', pageInfo);
+    IssueBoard board = await issueBoardService.getIssuesByName('Create', pageInfo);
     
     // Assert
     assert(board.issues.length == 2);
   });
   
-  test('calling getIssuesByProjectName on IssueBoardService returns all issues filtered by project name', () {
+  test('calling getIssuesByProjectName on IssueBoardService returns all issues filtered by project name', () async {
     // Arrange
     var pageInfo = new PageInfo(0, 2);
     var projects = new List<Project>()
@@ -88,13 +88,13 @@ void main() {
     IssueBoardService issueBoardService = new IssueBoardService(store);  
         
     // Act
-    IssueBoard board = issueBoardService.getIssuesByProjectName('Project 1', pageInfo);    
+    IssueBoard board = await issueBoardService.getIssuesByProjectName('Project 1', pageInfo);    
         
     // Assert
     assert(board.issues.length == 1);
   });
   
-  test('retrieving IssueBoard via getAllIssues limits results set based on page info', () {
+  test('retrieving IssueBoard via getAllIssues limits results set based on page info', () async {
     // Arrange
     var pageInfo = new PageInfo(0, 2);
     var issues = new List<Issue>()
@@ -108,13 +108,13 @@ void main() {
     IssueBoardService issueBoardService = new IssueBoardService(store);  
     
     // Act
-    IssueBoard board = issueBoardService.getAllIssues(pageInfo);
+    IssueBoard board = await issueBoardService.getAllIssues(pageInfo);
     
     // Assert
     assert(board.issues.length == pageInfo.pageSize);
   });
   
-  test('retrieving IssueBoard via getIssuesByName limits results set based on page info', () {
+  test('retrieving IssueBoard via getIssuesByName limits results set based on page info', () async {
     // Arrange
     var pageInfo = new PageInfo(0, 2);
     var issues = new List<Issue>()
@@ -128,13 +128,13 @@ void main() {
     IssueBoardService issueBoardService = new IssueBoardService(store);  
     
     // Act
-    IssueBoard board = issueBoardService.getIssuesByName('Issue', pageInfo);
+    IssueBoard board = await issueBoardService.getIssuesByName('Issue', pageInfo);
     
     // Assert
     assert(board.issues.length == pageInfo.pageSize);
   });
   
-  test('retrieving IssueBoard via getIssuesByprojectName limits results set based on page info', () {
+  test('retrieving IssueBoard via getIssuesByprojectName limits results set based on page info', () async {
     // Arrange
     var pageInfo = new PageInfo(0, 2);
     var projects = new List<Project>()
@@ -149,16 +149,16 @@ void main() {
         ..when(callsTo('getAllIssues')).alwaysReturn(issues)
         ..when(callsTo('getAllProjects')).alwaysReturn(projects);
    
-    IssueBoardService issueBoardService = new IssueBoardService(store);  
+    var issueBoardService = new IssueBoardService(store);  
        
     // Act
-    IssueBoard board = issueBoardService.getIssuesByProjectName('Project 1', pageInfo);
+    var board = await issueBoardService.getIssuesByProjectName('Project 1', pageInfo);
     
     // Assert
     assert(board.issues.length == pageInfo.pageSize);
   });
   
-  test('retrieving IssueBoard via getAllIssues sets paging metadata', () {
+  test('retrieving IssueBoard via getAllIssues sets paging metadata', () async {
       // Arrange
       var pageInfo = new PageInfo(0, 2);
       var issues = new List<Issue>()
@@ -172,7 +172,7 @@ void main() {
       IssueBoardService issueBoardService = new IssueBoardService(store);  
       
       // Act
-      IssueBoard board = issueBoardService.getAllIssues(pageInfo);
+      IssueBoard board = await issueBoardService.getAllIssues(pageInfo);
       
       // Assert
       assert(board.pageInfo == pageInfo);
@@ -180,7 +180,7 @@ void main() {
       expect(board.searchQueryArgs, orderedEquals([]));
     });
     
-    test('retrieving IssueBoard via getIssuesByName sets paging metadata', () {
+    test('retrieving IssueBoard via getIssuesByName sets paging metadata', () async {
       // Arrange
       var pageInfo = new PageInfo(0, 2);
       String searchTerm = 'Issue';
@@ -196,7 +196,7 @@ void main() {
       IssueBoardService issueBoardService = new IssueBoardService(store);  
       
       // Act
-      IssueBoard board = issueBoardService.getIssuesByName(searchTerm, pageInfo);
+      IssueBoard board = await issueBoardService.getIssuesByName(searchTerm, pageInfo);
       
       // Assert
       assert(board.pageInfo == pageInfo);
@@ -204,7 +204,7 @@ void main() {
       expect(board.searchQueryArgs, orderedEquals([searchTerm]));
     });
     
-    test('retrieving IssueBoard via getIssuesByprojectName sets paging metadata', () {
+    test('retrieving IssueBoard via getIssuesByprojectName sets paging metadata', () async {
       // Arrange
       var pageInfo = new PageInfo(0, 2);
       String projectName = 'Project 1';
@@ -223,7 +223,7 @@ void main() {
       IssueBoardService issueBoardService = new IssueBoardService(store);  
          
       // Act
-      IssueBoard board = issueBoardService.getIssuesByProjectName(projectName, pageInfo);
+      IssueBoard board = await issueBoardService.getIssuesByProjectName(projectName, pageInfo);
       
       // Assert
       assert(board.pageInfo == pageInfo);
@@ -232,7 +232,7 @@ void main() {
     });
 
 
-  test('retrieving IssueBoard via getAllIssues skip results based on skip count', () {
+  test('retrieving IssueBoard via getAllIssues skip results based on skip count', () async {
         // Arrange
         var pageInfo = new PageInfo(4, 2);
         var issues = new List<Issue>()
@@ -249,7 +249,7 @@ void main() {
         IssueBoardService issueBoardService = new IssueBoardService(store);  
         
         // Act
-        IssueBoard board = issueBoardService.getAllIssues(pageInfo);
+        IssueBoard board = await issueBoardService.getAllIssues(pageInfo);
         
         // Assert
         assert(board.issues.length == 2);
@@ -257,22 +257,37 @@ void main() {
         assert(board.issues[1] == issues[5]);
       });
   
-  test('calling getAllIssues on the IssueBoardService with no pageInfo will throw ArgumentError', () {
+  test('calling getAllIssues on the IssueBoardService with no pageInfo will throw ArgumentError', () async{
     // Act, Assert
-    expect(() => new IssueBoardService(null).getAllIssues(null), throwsArgumentError);
+    try {
+      await new IssueBoardService(null).getAllIssues(null);
+      assert(false); // Ensure that catch block gets hit
+    } catch (e) {
+      assert(e is ArgumentError);
+    }
   });
   
-  test('calling getIssuesByName on the IssueBoardService with no pageInfo will throw ArgumentError', () {
+  test('calling getIssuesByName on the IssueBoardService with no pageInfo will throw ArgumentError', () async {
     // Act, Assert
-    expect(() => new IssueBoardService(null).getIssuesByName(null, null), throwsArgumentError);
+    try {
+      await new IssueBoardService(null).getIssuesByName(null, null);
+      assert(false); // Ensure that catch block gets hit
+    } catch (e) {
+      assert(e is ArgumentError);
+    }
   });
   
-  test('calling getIssuesByProjectName on the IssueBoardService with no pageInfo will throw ArgumentError', () {
+  test('calling getIssuesByProjectName on the IssueBoardService with no pageInfo will throw ArgumentError', () async {
     // Act, Assert
-    expect(() => new IssueBoardService(null).getIssuesByProjectName(null, null), throwsArgumentError);
+    try {
+      await new IssueBoardService(null).getIssuesByProjectName(null, null);
+      assert(false); // Ensure that catch block gets hit
+    } catch (e) {
+      assert(e is ArgumentError);
+    }
   });
   
-  test('retrieving IssueBoard via getIssuesByName skip results based on skip count', () {
+  test('retrieving IssueBoard via getIssuesByName skip results based on skip count', () async {
         // Arrange
         var pageInfo = new PageInfo(4, 2);
         String searchTerm = 'Issue';
@@ -291,7 +306,7 @@ void main() {
         IssueBoardService issueBoardService = new IssueBoardService(store);  
         
         // Act
-        IssueBoard board = issueBoardService.getIssuesByName(searchTerm, pageInfo);
+        IssueBoard board = await issueBoardService.getIssuesByName(searchTerm, pageInfo);
         
         // Assert
         assert(board.issues.length == 2);
@@ -300,7 +315,7 @@ void main() {
       });
   
 
-    test('retrieving IssueBoard via getIssuesByprojectName sets paging metadata', () {
+    test('retrieving IssueBoard via getIssuesByprojectName sets paging metadata', () async {
       // Arrange
       var pageInfo = new PageInfo(4, 2);
       String projectName = 'Project 1';
@@ -322,7 +337,7 @@ void main() {
       IssueBoardService issueBoardService = new IssueBoardService(store);  
          
       // Act
-      IssueBoard board = issueBoardService.getIssuesByProjectName(projectName, pageInfo);
+      IssueBoard board = await issueBoardService.getIssuesByProjectName(projectName, pageInfo);
       
       // Assert
       assert(board.issues.length == 2);

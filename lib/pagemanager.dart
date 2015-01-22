@@ -5,7 +5,7 @@ class PageManager {
   
   PageManager(this.issueBoardService);
   
-  IssueBoard getNextPage(IssueBoard issueBoard) {
+  Future<IssueBoard> getNextPage(IssueBoard issueBoard) async {
     
     var resultsToSkip = (issueBoard.pageInfo.pageSize + issueBoard.pageInfo.skipCount);
     
@@ -14,11 +14,12 @@ class PageManager {
     
     var issueBoardInstance = reflect(this.issueBoardService);
     var result = issueBoardInstance.invoke(issueBoard.searchQueryMethod, issueBoard.searchQueryArgs);
+    var future = result.reflectee as Future<IssueBoard>; 
     
-    return result.reflectee as IssueBoard;
+    return await future;
   }
   
-  IssueBoard getPreviousPage(IssueBoard issueBoard) {
+  Future<IssueBoard> getPreviousPage(IssueBoard issueBoard) async {
     var resultsToSkip = (issueBoard.pageInfo.skipCount - issueBoard.pageInfo.pageSize);
     
     if (resultsToSkip < 0) resultsToSkip = 0;
@@ -28,7 +29,8 @@ class PageManager {
     
     var issueBoardInstance = reflect(this.issueBoardService);
     var result = issueBoardInstance.invoke(issueBoard.searchQueryMethod, issueBoard.searchQueryArgs);
+    var future = result.reflectee as Future<IssueBoard>; 
     
-    return result.reflectee as IssueBoard;
+    return await future;
   }
 }
