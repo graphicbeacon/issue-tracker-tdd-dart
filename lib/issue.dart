@@ -1,16 +1,16 @@
 part of issuelib;
 
-class Issue {
+class Issue extends Object with Exportable {
   
-  String id;
-  String title;
-  String description;
-  DateTime dueDate;
-  IssueStatus status;
-  String projectName;
-  String createdBy;
-  String assignedTo;
-  List<Attachment> attachments;
+  @export String id;
+  @export String title;
+  @export String description;
+  @export DateTime dueDate;
+  @export IssueStatus status;
+  @export String projectName;
+  @export String createdBy;
+  @export String assignedTo;
+  @export List<Attachment> attachments;
   
   Issue({String this.id,
     String this.title, 

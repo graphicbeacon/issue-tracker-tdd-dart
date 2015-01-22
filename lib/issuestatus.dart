@@ -1,7 +1,9 @@
 part of issuelib;
 
-class IssueStatus {
-  int state;
+class IssueStatus extends Object with Exportable {
+  @export int state;
+  
+  IssueStatus();
   
   IssueStatus.opened() {
     this.state = 1;

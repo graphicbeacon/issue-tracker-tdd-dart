@@ -2,7 +2,7 @@ part of issuelib;
 
 abstract class Store {
   // Commands
-  void storeIssue(Issue issue);
+  Future storeIssue(Issue issue);
   void storeProject(Project project);
   void storeUser(User user);
   void storeUserSession(UserSession userSession);

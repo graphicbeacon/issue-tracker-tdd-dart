@@ -4,7 +4,10 @@ import 'dart:mirrors';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'dart:math';
+import 'dart:async';
 import 'package:uuid/uuid.dart';
+import "package:redis_client/redis_client.dart";
+import 'package:exportable/exportable.dart';
 
 part 'issue.dart';
 part 'issueboard.dart';
@@ -22,3 +25,4 @@ part 'hashingmanager.dart';
 part 'sha256hashingmanager.dart';
 part 'usersession.dart';
 part 'attachment.dart';
+part 'redisstore.dart';

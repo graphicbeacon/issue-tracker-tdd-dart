@@ -1,8 +1,8 @@
 part of issuelib;
 
-class Attachment {
-  String name;
-  String location;
+class Attachment extends Object with Exportable {
+  @export String name;
+  @export String location;
   
   Attachment(this.name, this.location);
 }
