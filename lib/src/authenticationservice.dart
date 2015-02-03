@@ -34,7 +34,7 @@ class AuthenticationService {
     var uuid = new Uuid();
     var sessionToken = uuid.v1();
     
-    var userSession = new UserSession(sessionToken, username);
+    var userSession = new UserSession.create(sessionToken, username);
     this.store.storeUserSession(userSession);
     
     return sessionToken;

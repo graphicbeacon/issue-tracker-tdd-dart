@@ -9,8 +9,8 @@ void main() {
   test('calling createIssue on IssueService stores issue', () async {
     
     // Arrange
-    var user = new User('Bob', 'Doe', 'bob', '');
-    var userSession = new UserSession('token', user.username);
+    var user = new User.create('Bob', 'Doe', 'bob', '');
+    var userSession = new UserSession.create('token', user.username);
     
     var issueStore = new StoreMock()
         ..when(callsTo('hasProject')).alwaysReturn(true)
@@ -18,13 +18,13 @@ void main() {
         ..when(callsTo('getUserSession')).alwaysReturn(userSession)
         ..when(callsTo('getUser')).alwaysReturn(user);
     
-    IssueService issueService = new IssueService(issueStore, '');
-    String id = '123';
-    String title = '';
-    String description = '';
-    DateTime dueDate = new DateTime.now();
-    IssueStatus issueStatus = new IssueStatus.opened();
-    String projectName = '';
+    var issueService = new IssueService(issueStore, '');
+    var id = '123';
+    var title = '';
+    var description = '';
+    var dueDate = new DateTime.now();
+    var issueStatus = new IssueStatus.opened();
+    var projectName = '';
     
     // Act
     await issueService.createIssue(id, title, description, dueDate, issueStatus, projectName, '');
@@ -36,19 +36,11 @@ void main() {
   test('calling createIssue on IssueService stores issue with correct values', () async {
     
     // Arrange
-    var user = new User('Bob', 'Doe', 'bob', '');
-    var userSession = new UserSession('token', user.username);
+    var user = new User.create('Bob', 'Doe', 'bob', '');
+    var userSession = new UserSession.create('token', user.username);
     
-    Issue expectedIssue = new Issue(
-        id: '123',
-        title : 'Lorem ipsum dolor sit amet',
-        description : 'This is the issue description.',
-        dueDate : new DateTime.now(),
-        status : new IssueStatus.opened(),
-        projectName : 'Project 1',
-        createdBy: 'Bob Doe',
-        assignedTo: 'Bob Doe'
-    );
+    var expectedIssue = new Issue.create('123', 'Lorem ipsum dolor sit amet', 'This is the issue description.', 
+        new DateTime.now(), new IssueStatus.opened(), 'Project 1', 'Bob Doe', 'Bob Doe');
     
     var issueStore = new StoreMock()
       ..when(callsTo('hasProject')).alwaysReturn(true)
@@ -56,7 +48,7 @@ void main() {
       ..when(callsTo('getUserSession')).alwaysReturn(userSession)
       ..when(callsTo('getUser')).alwaysReturn(user);
      
-    IssueService issueService = new IssueService(issueStore, '');
+    var issueService = new IssueService(issueStore, '');
     
     // Act
     await issueService.createIssue(expectedIssue.id, expectedIssue.title, expectedIssue.description, 
@@ -73,13 +65,13 @@ void main() {
         ..when(callsTo('hasIssue')).alwaysReturn(false)
         ..when(callsTo('hasProject')).alwaysReturn(false);
         
-      IssueService issueService = new IssueService(issueStore, '');
+      var issueService = new IssueService(issueStore, '');
        
-      String title = 'Lorem ipsum dolor sit amet';
-      String description = 'This is the issue description.';
-      DateTime dueDate = new DateTime.now();
-      IssueStatus issueStatus = new IssueStatus.opened();
-      String projectName = 'Project 1';
+      var title = 'Lorem ipsum dolor sit amet';
+      var description = 'This is the issue description.';
+      var dueDate = new DateTime.now();
+      var issueStatus = new IssueStatus.opened();
+      var projectName = 'Project 1';
         
       // Act, Assert
       try {
@@ -92,19 +84,12 @@ void main() {
   
   test('calling createIssue on IssueService takes in UserSession token and populates createdBy and assignedTo fields', () async {
     // Arrange
-    var user = new User('Bob', 'Doe', 'bob', '');
-    var userSession = new UserSession('token', user.username);
+    var user = new User.create('Bob', 'Doe', 'bob', '');
+    var userSession = new UserSession.create('token', user.username);
 
-    Issue expectedIssue = new Issue(
-            id: '123',
-            title : 'Lorem ipsum dolor sit amet',
-            description : 'This is the issue description.',
-            dueDate : new DateTime.now(),
-            status : new IssueStatus.opened(),
-            projectName : 'Project 1',
-            createdBy: '${user.firstName} ${user.lastName}',
-            assignedTo: '${user.firstName} ${user.lastName}'
-        );
+    var expectedIssue = new Issue.create('123', 'Lorem ipsum dolor sit amet', 'This is the issue description.',
+        new DateTime.now(), new IssueStatus.opened(), 'Project 1',
+        '${user.firstName} ${user.lastName}', '${user.firstName} ${user.lastName}');
     
     var issueStore = new StoreMock()
         ..when(callsTo('hasProject')).alwaysReturn(true)
@@ -112,7 +97,7 @@ void main() {
         ..when(callsTo('getUserSession')).alwaysReturn(userSession)
         ..when(callsTo('getUser')).alwaysReturn(user);
     
-    IssueService issueService = new IssueService(issueStore, '');
+    var issueService = new IssueService(issueStore, '');
     
     // Act
     await issueService.createIssue('123', expectedIssue.title, expectedIssue.description, 
@@ -124,23 +109,17 @@ void main() {
   
   test('calling createIssue on IssueService will throw an exception when the user is not signed in', () async {
      // Arrange
-     var userSession = new UserSession('token', 'Bob');
+     var userSession = new UserSession.create('token', 'Bob');
     
-     Issue issue = new Issue(
-         id: '123',
-         title : 'Lorem ipsum dolor sit amet',
-         description : 'This is the issue description.',
-         dueDate : new DateTime.now(),
-         status : new IssueStatus.opened(),
-         projectName : 'Project 1'
-     );
+     var issue = new Issue()..id = '123'..title = 'Lorem ipsum dolor sit amet'..description = 'This is the issue description.'
+         ..dueDate = new DateTime.now()..status = new IssueStatus.opened()..projectName = 'Project 1';
      
      var issueStore = new StoreMock()
          ..when(callsTo('hasProject')).alwaysReturn(true)
          ..when(callsTo('hasIssue')).alwaysReturn(false)
          ..when(callsTo('getUserSession')).alwaysReturn(null);
      
-     IssueService issueService = new IssueService(issueStore, '');
+     var issueService = new IssueService(issueStore, '');
      
      // Act, Assert
      try {
@@ -155,21 +134,15 @@ void main() {
   
   test('calling createIssue on IssueService will throw an exception when id already exists', () async {
       // Arrange
-      var userSession = new UserSession('token', 'Bob');
+      var userSession = new UserSession.create('token', 'Bob');
        
-      Issue issue = new Issue(
-          id: '123',
-          title : 'Lorem ipsum dolor sit amet',
-          description : 'This is the issue description.',
-          dueDate : new DateTime.now(),
-          status : new IssueStatus.opened(),
-          projectName : 'Project 1'
-      );
+      var issue = new Issue()..id = '123'..title = 'Lorem ipsum dolor sit amet'..description = 'This is the issue description.'
+               ..dueDate = new DateTime.now()..status = new IssueStatus.opened()..projectName = 'Project 1';
       
       var issueStore = new StoreMock()
         ..when(callsTo('hasIssue')).alwaysReturn(true);
       
-      IssueService issueService = new IssueService(issueStore, '');
+      var issueService = new IssueService(issueStore, '');
       
       // Act, Assert
       try {
@@ -185,21 +158,16 @@ void main() {
       // Arrange
       const fileName = 'file';
            
-      Issue issue = new Issue(
-          id: '123',
-          title : 'Lorem ipsum dolor sit amet',
-          description : 'This is the issue description.',
-          dueDate : new DateTime.now(),
-          status : new IssueStatus.opened(),
-          projectName : 'Project 1'
-      );
+      var issue = new Issue()..id = '123'..title = 'Lorem ipsum dolor sit amet'..description = 'This is the issue description.'
+                     ..dueDate = new DateTime.now()..status = new IssueStatus.opened()..projectName = 'Project 1'
+              ..attachments = new List<Attachment>();;
       
       var issueStore = new StoreMock()
           ..when(callsTo('hasIssue')).alwaysReturn(true)
           ..when(callsTo('getIssue')).alwaysReturn(issue)
           ..when(callsTo('hasUserSession')).alwaysReturn(true);
 
-      IssueService issueService = new IssueService(issueStore, '');
+      var issueService = new IssueService(issueStore, '');
       
       // Act
       await issueService.saveAttachment(issue.id, '', fileName);
@@ -218,7 +186,7 @@ void main() {
           ..when(callsTo('getIssue')).alwaysReturn(null)
           ..when(callsTo('hasUserSession')).alwaysReturn(true);
 
-      IssueService issueService = new IssueService(issueStore, '');
+      var issueService = new IssueService(issueStore, '');
       
       // Act, Assert
       try {
@@ -236,7 +204,7 @@ void main() {
           ..when(callsTo('getIssue')).alwaysReturn(new Issue())
           ..when(callsTo('hasUserSession')).alwaysReturn(false);
 
-      IssueService issueService = new IssueService(issueStore, '');
+      var issueService = new IssueService(issueStore, '');
       
       // Act, Assert
       try {
@@ -253,21 +221,16 @@ void main() {
       const fileName = 'file';
       const attachmentFilesDirectory = 'path/to/file';
       
-      Issue issue = new Issue(
-          id: '123',
-          title : 'Lorem ipsum dolor sit amet',
-          description : 'This is the issue description.',
-          dueDate : new DateTime.now(),
-          status : new IssueStatus.opened(),
-          projectName : 'Project 1'
-      );
+      var issue = new Issue()..id = '123'..title = 'Lorem ipsum dolor sit amet'..description = 'This is the issue description.'
+          ..dueDate = new DateTime.now()..status = new IssueStatus.opened()..projectName = 'Project 1'
+          ..attachments = new List<Attachment>();
       
       var issueStore = new StoreMock()
           ..when(callsTo('hasIssue')).alwaysReturn(true)
           ..when(callsTo('getIssue')).alwaysReturn(issue)
           ..when(callsTo('hasUserSession')).alwaysReturn(true);
 
-      IssueService issueService = new IssueService(issueStore, attachmentFilesDirectory);
+      var issueService = new IssueService(issueStore, attachmentFilesDirectory);
       
       // Act
       await issueService.saveAttachment(issue.id, '', fileName);

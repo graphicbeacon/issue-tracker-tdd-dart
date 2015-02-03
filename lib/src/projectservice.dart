@@ -9,9 +9,7 @@ class ProjectService {
     if (await store.hasProject(name))
       throw new ArgumentError("Name must be unique");
     
-    var project = new Project(
-        name: name,
-        description:description);
+    var project = new Project.create(name, description);
     
     await store.storeProject(project);
   }

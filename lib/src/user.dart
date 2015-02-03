@@ -9,7 +9,8 @@ class User extends Object with Exportable {
   @export String passwordSalt;
   @export String passwordHash;
   
-  User(this.firstName, this.lastName, this.username, this.plainTextPassword);
+  User();
+  User.create(this.firstName, this.lastName, this.username, this.plainTextPassword);
   
   bool operator ==(o) {
       return o is User &&

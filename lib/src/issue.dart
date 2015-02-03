@@ -12,15 +12,11 @@ class Issue extends Object with Exportable {
   @export String assignedTo;
   @export List<Attachment> attachments;
   
-  Issue({String this.id,
-    String this.title, 
-    String this.description, 
-    DateTime this.dueDate, 
-    IssueStatus this.status,
-    String this.projectName,
-    String this.createdBy,
-    String this.assignedTo}) {
-    attachments = new List<Attachment>(); 
+  Issue();
+  
+  Issue.create(this.id, this.title, this.description, this.dueDate,
+      this.status, this.projectName, this.createdBy, this.assignedTo) {
+    attachments = new List<Attachment>();
   }
   
   bool operator ==(o) {

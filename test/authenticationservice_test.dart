@@ -13,7 +13,7 @@ void main() {
         ..when(callsTo('hasUser')).alwaysReturn(false);
     var hashingManager = new HashingManagerMock();
     
-    var user = new User('First Name', 'Last Name', 'myUserName', 'myPlainTextPassword');
+    var user = new User.create('First Name', 'Last Name', 'myUserName', 'myPlainTextPassword');
     var authenticationService = new AuthenticationService(store, hashingManager);
     
     // Act
@@ -36,7 +36,7 @@ void main() {
     
     
     var password = 'hello';
-    var user = new User('First Name', 'Last Name', 'myUserName', password);
+    var user = new User.create('First Name', 'Last Name', 'myUserName', password);
     var authenticationService = new AuthenticationService(store, hashingManager);
      
     // Act
@@ -52,7 +52,7 @@ void main() {
   
   test('calling login on the AuthenticationService will login user and return token', () async {
     // Arrange
-    var user = new User('first','last','user','pass')
+    var user = new User.create('first','last','user','pass')
             ..passwordSalt = 'salt';
     
     var store = new StoreMock()
@@ -74,7 +74,7 @@ void main() {
   test('calling login on the AuthenticationService will store user session information', () async {
       // Arrange
       const username = 'username';
-      var user = new User('first','last','user','pass')
+      var user = new User.create('first','last','user','pass')
         ..passwordSalt = 'salt';
       
       var store = new StoreMock()
@@ -88,14 +88,14 @@ void main() {
       var token = await authenticationService.login(username, 'plainTextPassword');
       
       // Assert
-      var userSession = new UserSession(token, username);
+      var userSession = new UserSession.create(token, username);
       store.getLogs(callsTo('storeUserSession', userSession)).verify(happenedOnce);
     });
   
   test('calling login on the AuthenticationService will check password against hash', () async {
       // Arrange
       var password = 'pasword123';
-      var user = new User('', '', 'myUserName', '')
+      var user = new User.create('', '', 'myUserName', '')
         ..passwordSalt = 'hoho'
         ..passwordHash = 'hohoho';
     
@@ -118,7 +118,7 @@ void main() {
   test('calling login on the AuthenticationService will throw ArgumentError when password does not match hash', () async {
       // Arrange
       var password = 'pasword123';
-      var user = new User('', '', 'myUserName', '')
+      var user = new User.create('', '', 'myUserName', '')
         ..passwordSalt = 'hoho'
         ..passwordHash = 'hohoho';
     
@@ -157,7 +157,7 @@ void main() {
 
   test('calling createUser on the AuthenticationService will throw error is username is not unique', () async {
     // Arrange
-    var user = new User('', '', 'myUserName', '');
+    var user = new User.create('', '', 'myUserName', '');
   
     var store = new StoreMock()
       ..when(callsTo('hasUser')).alwaysReturn(true);
@@ -176,8 +176,8 @@ void main() {
 
   test('calling createUser on the AuthenticationService will not store password as plain text', () async {
     // Arrange
-    var user = new User('first', 'last', 'myUserName', 'plainTextPassword');
-    var expectedUser = new User(user.firstName, user.lastName, user.username, '');
+    var user = new User.create('first', 'last', 'myUserName', 'plainTextPassword');
+    var expectedUser = new User.create(user.firstName, user.lastName, user.username, '');
     
     var store = new StoreMock()
       ..when(callsTo('hasUser')).alwaysReturn(false);

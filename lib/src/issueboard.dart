@@ -9,5 +9,7 @@ class IssueBoard {
   // Data
   List<Issue> issues;
   
-  IssueBoard(this.pageInfo, this.searchQueryMethod, this.searchQueryArgs, this.issues);
+  IssueBoard();
+  
+  IssueBoard.create(this.pageInfo, this.searchQueryMethod, this.searchQueryArgs, this.issues);
 }

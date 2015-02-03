@@ -17,7 +17,7 @@ class Sha256HashingManager implements HashingManager {
 
   @override
   String generateSalt() {
-    StringBuffer saltStringBuffer = new StringBuffer();
+    var saltStringBuffer = new StringBuffer();
     
     var random = new Random(new DateTime.now().millisecondsSinceEpoch);
     for (var i = 0; i < 32; i++) {

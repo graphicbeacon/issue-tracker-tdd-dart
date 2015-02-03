@@ -10,7 +10,7 @@ class PageManager {
     var resultsToSkip = (issueBoard.pageInfo.pageSize + issueBoard.pageInfo.skipCount);
     
     issueBoard.searchQueryArgs
-        ..add(new PageInfo(resultsToSkip, issueBoard.pageInfo.pageSize));
+        ..add(new PageInfo.create(resultsToSkip, issueBoard.pageInfo.pageSize));
     
     var issueBoardInstance = reflect(this.issueBoardService);
     var result = issueBoardInstance.invoke(issueBoard.searchQueryMethod, issueBoard.searchQueryArgs);
@@ -25,7 +25,7 @@ class PageManager {
     if (resultsToSkip < 0) resultsToSkip = 0;
     
     issueBoard.searchQueryArgs
-        ..add(new PageInfo(resultsToSkip, issueBoard.pageInfo.pageSize));
+        ..add(new PageInfo.create(resultsToSkip, issueBoard.pageInfo.pageSize));
     
     var issueBoardInstance = reflect(this.issueBoardService);
     var result = issueBoardInstance.invoke(issueBoard.searchQueryMethod, issueBoard.searchQueryArgs);

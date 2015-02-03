@@ -83,13 +83,13 @@ class RedisStore implements Store {
   Future<User> getUser(String username) async {
     var key = 'user:$username';
     var json = await client.get(key);
-    return new User('','','','')..initFromJson(json);
+    return new User()..initFromJson(json);
   }
   
   Future<UserSession> getUserSession(String sessionToken) async {
     var key = 'usersession:$sessionToken';
     var json = await client.get(key);
-    return new UserSession('','')..initFromJson(json);
+    return new UserSession()..initFromJson(json);
   }
   
   Future<bool> hasIssue(String id) async {

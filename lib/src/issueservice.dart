@@ -27,16 +27,12 @@ class IssueService {
     
     var user = await store.getUser(userSession.username);
     
-    store.storeIssue(new Issue(
-      id: id,
-      title: title,
-      description: description,
-      dueDate: dueDate,
-      status: status,
-      projectName: projectName,
-      createdBy: '${user.firstName} ${user.lastName}',
-      assignedTo: '${user.firstName} ${user.lastName}'
-    ));
+    var issue = new Issue.create(id, title, description, dueDate,
+        status, projectName, '${user.firstName} ${user.lastName}',
+        '${user.firstName} ${user.lastName}'
+      );
+    
+    store.storeIssue(issue);
   }
   
   Future saveAttachment(String issueId, String sessionToken, String fileName) async {
@@ -48,7 +44,7 @@ class IssueService {
       throw new ArgumentError("Issue does not exist");
     
     var location = '${attachmentFilesDirectory}${issue.id}/${fileName}';
-    issue.attachments.add(new Attachment(fileName, location));
+    issue.attachments.add(new Attachment.create(fileName, location));
     
     store.storeIssue(issue);
   }

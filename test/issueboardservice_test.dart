@@ -9,18 +9,18 @@ void main() {
   // IssueBoardService tests
   test('calling getAllIssues on issueBoardService returns all issues as an IssueBoard', () async {
     // Arrange
-    var pageInfo = new PageInfo(0, 2);
+    var pageInfo = new PageInfo.create(0, 2);
     var issues = new List<Issue>()
-      ..add(new Issue (dueDate: new DateTime.now()))
-      ..add(new Issue (dueDate: new DateTime.now()));
+      ..add(new Issue()..dueDate = new DateTime.now())
+      ..add(new Issue()..dueDate = new DateTime.now());
       
     var issueStore = new StoreMock()
       ..when(callsTo('getAllIssues')).alwaysReturn(issues);
     
-    IssueBoardService issueBoardService = new IssueBoardService(issueStore);
+    var issueBoardService = new IssueBoardService(issueStore);
     
     // Act
-    IssueBoard board = await issueBoardService.getAllIssues(pageInfo);
+    var board = await issueBoardService.getAllIssues(pageInfo);
     
     // Assert
     assert(board.issues != null);
@@ -29,18 +29,18 @@ void main() {
   
   test('calling getAllIssues on issueBoardService returns all issues as an IssueBoard ordered by dueDate descending.', () async {
     // Arrange
-    var pageInfo = new PageInfo(0, 2);
+    var pageInfo = new PageInfo.create(0, 2);
     var issues = new List<Issue>()
-      ..add(new Issue (dueDate: DateTime.parse('2014-11-13 14:59:00')))
-      ..add(new Issue (dueDate: DateTime.parse('2014-11-13 17:59:00')));
+      ..add(new Issue()..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+      ..add(new Issue()..dueDate = DateTime.parse('2014-11-13 17:59:00'));
       
     var issueStore = new StoreMock()
       ..when(callsTo('getAllIssues')).alwaysReturn(new List<Issue>.from(issues));
     
-    IssueBoardService issueBoardService = new IssueBoardService(issueStore);
+    var issueBoardService = new IssueBoardService(issueStore);
     
     // Act
-    IssueBoard board = await issueBoardService.getAllIssues(pageInfo);
+    var board = await issueBoardService.getAllIssues(pageInfo);
     
     // Assert
     assert(board.issues.length == issues.length);
@@ -51,19 +51,19 @@ void main() {
   test('calling getIssueByName on IssueBoardService returns all issues as an IssueBoard with name', () async {
     
     // Arrange
-    var pageInfo = new PageInfo(0, 2);
+    var pageInfo = new PageInfo.create(0, 2);
     var issues = new List<Issue>()
-      ..add(new Issue (title: 'Create blah'))
-      ..add(new Issue (title: 'Create blah feature'))
-      ..add(new Issue (title: 'Delete pingdom alerts'));
+      ..add(new Issue()..title = 'Create blah')
+      ..add(new Issue()..title = 'Create blah feature')
+      ..add(new Issue()..title = 'Delete pingdom alerts');
           
     var issueStore = new StoreMock()
       ..when(callsTo('getAllIssues')).alwaysReturn(new List<Issue>.from(issues));
     
-    IssueBoardService issueBoardService = new IssueBoardService(issueStore);
+    var issueBoardService = new IssueBoardService(issueStore);
         
     // Act
-    IssueBoard board = await issueBoardService.getIssuesByName('Create', pageInfo);
+    var board = await issueBoardService.getIssuesByName('Create', pageInfo);
     
     // Assert
     assert(board.issues.length == 2);
@@ -71,24 +71,24 @@ void main() {
   
   test('calling getIssuesByProjectName on IssueBoardService returns all issues filtered by project name', () async {
     // Arrange
-    var pageInfo = new PageInfo(0, 2);
+    var pageInfo = new PageInfo.create(0, 2);
     var projects = new List<Project>()
-      ..add(new Project(name: 'Project 1'))
-      ..add(new Project(name: 'Project 2'));
+      ..add(new Project.create('Project 1', ''))
+      ..add(new Project.create('Project 2', ''));
     
     var issues = new List<Issue>()
-      ..add(new Issue (title: 'Issue 1', projectName: 'Project 1'))
-      ..add(new Issue (title: 'Issue 2', projectName: 'Project 2'))
-      ..add(new Issue (title: 'Issue 3', projectName: 'Project 3'));
+             ..add(new Issue()..title = 'Issue 1'..projectName = 'Project 1')
+             ..add(new Issue()..title = 'Issue 2'..projectName = 'Project 2')
+             ..add(new Issue()..title = 'Issue 3'..projectName = 'Project 3');
     
     var store = new StoreMock()
       ..when(callsTo('getAllIssues')).alwaysReturn(issues)
       ..when(callsTo('getAllProjects')).alwaysReturn(projects);
     
-    IssueBoardService issueBoardService = new IssueBoardService(store);  
+    var issueBoardService = new IssueBoardService(store);  
         
     // Act
-    IssueBoard board = await issueBoardService.getIssuesByProjectName('Project 1', pageInfo);    
+    var board = await issueBoardService.getIssuesByProjectName('Project 1', pageInfo);    
         
     // Assert
     assert(board.issues.length == 1);
@@ -96,19 +96,19 @@ void main() {
   
   test('retrieving IssueBoard via getAllIssues limits results set based on page info', () async {
     // Arrange
-    var pageInfo = new PageInfo(0, 2);
+    var pageInfo = new PageInfo.create(0, 2);
     var issues = new List<Issue>()
-          ..add(new Issue (title: 'Issue 1', dueDate: DateTime.parse('2014-11-13 14:59:00')))
-          ..add(new Issue (title: 'Issue 2', dueDate: DateTime.parse('2014-11-13 14:59:00')))
-          ..add(new Issue (title: 'Issue 3', dueDate: DateTime.parse('2014-11-13 14:59:00')));
+                ..add(new Issue()..title = 'Issue 1'..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+                ..add(new Issue()..title = 'Issue 2'..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+                ..add(new Issue()..title = 'Issue 3'..dueDate = DateTime.parse('2014-11-13 14:59:00'));
     
     var store = new StoreMock()
           ..when(callsTo('getAllIssues')).alwaysReturn(issues);
 
-    IssueBoardService issueBoardService = new IssueBoardService(store);  
+    var issueBoardService = new IssueBoardService(store);  
     
     // Act
-    IssueBoard board = await issueBoardService.getAllIssues(pageInfo);
+    var board = await issueBoardService.getAllIssues(pageInfo);
     
     // Assert
     assert(board.issues.length == pageInfo.pageSize);
@@ -116,19 +116,19 @@ void main() {
   
   test('retrieving IssueBoard via getIssuesByName limits results set based on page info', () async {
     // Arrange
-    var pageInfo = new PageInfo(0, 2);
+    var pageInfo = new PageInfo.create(0, 2);
     var issues = new List<Issue>()
-          ..add(new Issue (title: 'Issue 1', dueDate: DateTime.parse('2014-11-13 14:59:00')))
-          ..add(new Issue (title: 'Issue 2', dueDate: DateTime.parse('2014-11-13 14:59:00')))
-          ..add(new Issue (title: 'Issue 3', dueDate: DateTime.parse('2014-11-13 14:59:00')));
+                ..add(new Issue()..title = 'Issue 1'..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+                ..add(new Issue()..title = 'Issue 2'..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+                ..add(new Issue()..title = 'Issue 3'..dueDate = DateTime.parse('2014-11-13 14:59:00'));
     
     var store = new StoreMock()
           ..when(callsTo('getAllIssues')).alwaysReturn(issues);
 
-    IssueBoardService issueBoardService = new IssueBoardService(store);  
+    var issueBoardService = new IssueBoardService(store);  
     
     // Act
-    IssueBoard board = await issueBoardService.getIssuesByName('Issue', pageInfo);
+    var board = await issueBoardService.getIssuesByName('Issue', pageInfo);
     
     // Assert
     assert(board.issues.length == pageInfo.pageSize);
@@ -136,14 +136,14 @@ void main() {
   
   test('retrieving IssueBoard via getIssuesByprojectName limits results set based on page info', () async {
     // Arrange
-    var pageInfo = new PageInfo(0, 2);
+    var pageInfo = new PageInfo.create(0, 2);
     var projects = new List<Project>()
-          ..add(new Project(name: 'Project 1'));
+          ..add(new Project.create('Project 1', ''));
    
     var issues = new List<Issue>()
-         ..add(new Issue (title: 'Issue 1', projectName: 'Project 1'))
-         ..add(new Issue (title: 'Issue 2', projectName: 'Project 1'))
-         ..add(new Issue (title: 'Issue 3', projectName: 'Project 1'));
+               ..add(new Issue()..title = 'Issue 1'..projectName = 'Project 1')
+               ..add(new Issue()..title = 'Issue 2'..projectName = 'Project 1')
+               ..add(new Issue()..title = 'Issue 3'..projectName = 'Project 1');
    
     var store = new StoreMock()
         ..when(callsTo('getAllIssues')).alwaysReturn(issues)
@@ -160,19 +160,19 @@ void main() {
   
   test('retrieving IssueBoard via getAllIssues sets paging metadata', () async {
       // Arrange
-      var pageInfo = new PageInfo(0, 2);
+      var pageInfo = new PageInfo.create(0, 2);
       var issues = new List<Issue>()
-            ..add(new Issue (title: 'Issue 1', dueDate: DateTime.parse('2014-11-13 14:59:00')))
-            ..add(new Issue (title: 'Issue 2', dueDate: DateTime.parse('2014-11-13 14:59:00')))
-            ..add(new Issue (title: 'Issue 3', dueDate: DateTime.parse('2014-11-13 14:59:00')));
+                  ..add(new Issue()..title = 'Issue 1'..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+                  ..add(new Issue()..title = 'Issue 2'..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+                  ..add(new Issue()..title = 'Issue 3'..dueDate = DateTime.parse('2014-11-13 14:59:00'));
       
       var store = new StoreMock()
             ..when(callsTo('getAllIssues')).alwaysReturn(issues);
 
-      IssueBoardService issueBoardService = new IssueBoardService(store);  
+      var issueBoardService = new IssueBoardService(store);  
       
       // Act
-      IssueBoard board = await issueBoardService.getAllIssues(pageInfo);
+      var board = await issueBoardService.getAllIssues(pageInfo);
       
       // Assert
       assert(board.pageInfo == pageInfo);
@@ -182,18 +182,18 @@ void main() {
     
     test('retrieving IssueBoard via getIssuesByName sets paging metadata', () async {
       // Arrange
-      var pageInfo = new PageInfo(0, 2);
-      String searchTerm = 'Issue';
+      const searchTerm = 'Issue';
+      var pageInfo = new PageInfo.create(0, 2);
       
       var issues = new List<Issue>()
-            ..add(new Issue (title: 'Issue 1', dueDate: DateTime.parse('2014-11-13 14:59:00')))
-            ..add(new Issue (title: 'Issue 2', dueDate: DateTime.parse('2014-11-13 14:59:00')))
-            ..add(new Issue (title: 'Issue 3', dueDate: DateTime.parse('2014-11-13 14:59:00')));
+            ..add(new Issue()..title = 'Issue 1'..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+            ..add(new Issue()..title = 'Issue 2'..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+            ..add(new Issue()..title = 'Issue 3'..dueDate = DateTime.parse('2014-11-13 14:59:00'));
       
       var store = new StoreMock()
             ..when(callsTo('getAllIssues')).alwaysReturn(issues);
 
-      IssueBoardService issueBoardService = new IssueBoardService(store);  
+      var issueBoardService = new IssueBoardService(store);  
       
       // Act
       IssueBoard board = await issueBoardService.getIssuesByName(searchTerm, pageInfo);
@@ -206,24 +206,24 @@ void main() {
     
     test('retrieving IssueBoard via getIssuesByprojectName sets paging metadata', () async {
       // Arrange
-      var pageInfo = new PageInfo(0, 2);
-      String projectName = 'Project 1';
+      const projectName = 'Project 1';
+      var pageInfo = new PageInfo.create(0, 2);
       var projects = new List<Project>()
-            ..add(new Project(name: 'Project 1'));
+            ..add(new Project.create('Project 1', ''));
      
       var issues = new List<Issue>()
-           ..add(new Issue (title: 'Issue 1', projectName: 'Project 1'))
-           ..add(new Issue (title: 'Issue 2', projectName: 'Project 1'))
-           ..add(new Issue (title: 'Issue 3', projectName: 'Project 1'));
+           ..add(new Issue()..title = 'Issue 1'..projectName = 'Project 1')
+           ..add(new Issue()..title = 'Issue 2'..projectName = 'Project 1')
+           ..add(new Issue()..title = 'Issue 3'..projectName = 'Project 1');
      
       var store = new StoreMock()
           ..when(callsTo('getAllIssues')).alwaysReturn(issues)
           ..when(callsTo('getAllProjects')).alwaysReturn(projects);
      
-      IssueBoardService issueBoardService = new IssueBoardService(store);  
+      var issueBoardService = new IssueBoardService(store);  
          
       // Act
-      IssueBoard board = await issueBoardService.getIssuesByProjectName(projectName, pageInfo);
+      var board = await issueBoardService.getIssuesByProjectName(projectName, pageInfo);
       
       // Assert
       assert(board.pageInfo == pageInfo);
@@ -234,22 +234,22 @@ void main() {
 
   test('retrieving IssueBoard via getAllIssues skip results based on skip count', () async {
         // Arrange
-        var pageInfo = new PageInfo(4, 2);
+        var pageInfo = new PageInfo.create(4, 2);
         var issues = new List<Issue>()
-              ..add(new Issue (title: 'Issue 1', dueDate: DateTime.parse('2014-11-13 14:59:00')))
-              ..add(new Issue (title: 'Issue 2', dueDate: DateTime.parse('2014-11-13 14:59:00')))
-              ..add(new Issue (title: 'Issue 3', dueDate: DateTime.parse('2014-11-13 14:59:00')))
-              ..add(new Issue (title: 'Issue 4', dueDate: DateTime.parse('2014-11-13 14:59:00')))
-              ..add(new Issue (title: 'Issue 5', dueDate: DateTime.parse('2014-11-13 14:59:00')))
-              ..add(new Issue (title: 'Issue 6', dueDate: DateTime.parse('2014-11-13 14:59:00')));
+            ..add(new Issue()..title = 'Issue 1'..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+            ..add(new Issue()..title = 'Issue 2'..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+            ..add(new Issue()..title = 'Issue 3'..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+            ..add(new Issue()..title = 'Issue 4'..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+            ..add(new Issue()..title = 'Issue 5'..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+            ..add(new Issue()..title = 'Issue 6'..dueDate = DateTime.parse('2014-11-13 14:59:00'));
         
         var store = new StoreMock()
               ..when(callsTo('getAllIssues')).alwaysReturn(issues);
 
-        IssueBoardService issueBoardService = new IssueBoardService(store);  
+        var issueBoardService = new IssueBoardService(store);  
         
         // Act
-        IssueBoard board = await issueBoardService.getAllIssues(pageInfo);
+        var board = await issueBoardService.getAllIssues(pageInfo);
         
         // Assert
         assert(board.issues.length == 2);
@@ -289,24 +289,24 @@ void main() {
   
   test('retrieving IssueBoard via getIssuesByName skip results based on skip count', () async {
         // Arrange
-        var pageInfo = new PageInfo(4, 2);
-        String searchTerm = 'Issue';
+        var pageInfo = new PageInfo.create(4, 2);
+        var searchTerm = 'Issue';
         
         var issues = new List<Issue>()
-              ..add(new Issue (title: 'Issue 1', dueDate: DateTime.parse('2014-11-13 14:59:00')))
-              ..add(new Issue (title: 'Issue 2', dueDate: DateTime.parse('2014-11-13 14:59:00')))
-              ..add(new Issue (title: 'Issue 3', dueDate: DateTime.parse('2014-11-13 14:59:00')))
-              ..add(new Issue (title: 'Issue 4', dueDate: DateTime.parse('2014-11-13 14:59:00')))
-              ..add(new Issue (title: 'Issue 5', dueDate: DateTime.parse('2014-11-13 14:59:00')))
-              ..add(new Issue (title: 'Issue 6', dueDate: DateTime.parse('2014-11-13 14:59:00')));
+              ..add(new Issue()..title = 'Issue 1'..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+              ..add(new Issue()..title = 'Issue 2'..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+              ..add(new Issue()..title = 'Issue 3'..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+              ..add(new Issue()..title = 'Issue 4'..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+              ..add(new Issue()..title = 'Issue 5'..dueDate = DateTime.parse('2014-11-13 14:59:00'))
+              ..add(new Issue()..title = 'Issue 6'..dueDate = DateTime.parse('2014-11-13 14:59:00'));
         
         var store = new StoreMock()
               ..when(callsTo('getAllIssues')).alwaysReturn(issues);
 
-        IssueBoardService issueBoardService = new IssueBoardService(store);  
+        var issueBoardService = new IssueBoardService(store);  
         
         // Act
-        IssueBoard board = await issueBoardService.getIssuesByName(searchTerm, pageInfo);
+        var board = await issueBoardService.getIssuesByName(searchTerm, pageInfo);
         
         // Assert
         assert(board.issues.length == 2);
@@ -317,27 +317,28 @@ void main() {
 
     test('retrieving IssueBoard via getIssuesByprojectName sets paging metadata', () async {
       // Arrange
-      var pageInfo = new PageInfo(4, 2);
-      String projectName = 'Project 1';
+      const projectName = 'Project 1';
+      var pageInfo = new PageInfo.create(4, 2);
+      
       var projects = new List<Project>()
-            ..add(new Project(name: 'Project 1'));
+            ..add(new Project.create('Project 1', ''));
      
       var issues = new List<Issue>()
-           ..add(new Issue (title: 'Issue 1', projectName: 'Project 1'))
-           ..add(new Issue (title: 'Issue 2', projectName: 'Project 1'))
-           ..add(new Issue (title: 'Issue 3', projectName: 'Project 1'))
-           ..add(new Issue (title: 'Issue 4', projectName: 'Project 1'))
-           ..add(new Issue (title: 'Issue 5', projectName: 'Project 1'))
-           ..add(new Issue (title: 'Issue 6', projectName: 'Project 1'));
+           ..add(new Issue()..title = 'Issue 1'..projectName = 'Project 1')
+           ..add(new Issue()..title = 'Issue 2'..projectName = 'Project 1')
+           ..add(new Issue()..title = 'Issue 3'..projectName = 'Project 1')
+           ..add(new Issue()..title = 'Issue 4'..projectName = 'Project 1')
+           ..add(new Issue()..title = 'Issue 5'..projectName = 'Project 1')
+           ..add(new Issue()..title = 'Issue 6'..projectName = 'Project 1');
      
       var store = new StoreMock()
           ..when(callsTo('getAllIssues')).alwaysReturn(issues)
           ..when(callsTo('getAllProjects')).alwaysReturn(projects);
      
-      IssueBoardService issueBoardService = new IssueBoardService(store);  
+      var issueBoardService = new IssueBoardService(store);  
          
       // Act
-      IssueBoard board = await issueBoardService.getIssuesByProjectName(projectName, pageInfo);
+      var board = await issueBoardService.getIssuesByProjectName(projectName, pageInfo);
       
       // Assert
       assert(board.issues.length == 2);

@@ -6,7 +6,7 @@ import '../lib/issuelib.dart';
 void main() {
   
   group('Redis store integration tests', (){
-    // db1 corresponds to test database
+    // db 1 corresponds to test database
     const connectionString = 'localhost:6379';
     RedisClient client;
     
@@ -30,26 +30,19 @@ void main() {
     
     test('serialise and store Issue object with correct key', () async {
       // Arrange
-      var issue = new Issue(
-          id: '123', 
-          title: 'Issue 1', 
-          description: 'Issue description', 
-          dueDate: new DateTime.now(), 
-          status: new IssueStatus.opened(), 
-          projectName: 'Project 1', 
-          createdBy: 'Bob', 
-          assignedTo: 'Bob'
-      );
+      var issue = new Issue.create('123', 'Lorem ipsum dolor sit amet', 'This is the issue description.', 
+          new DateTime.now(), new IssueStatus.opened(), 'Project 1', 'Bob Doe', 'Bob Doe');
+      
       var expectedRedisKey = 'issue:${issue.id}';
       
-      RedisStore redisStore = new RedisStore(client);
+      var redisStore = new RedisStore(client);
       
       // Act
       await redisStore.storeIssue(issue);
       
       //Assert 
       return client.get(expectedRedisKey).then((String object) {
-        Issue retrievedIssue = new Issue()..initFromJson(object);
+        var retrievedIssue = new Issue()..initFromJson(object);
         
         assert(issue == retrievedIssue);
       });
@@ -58,20 +51,17 @@ void main() {
     
     test('serialise and store Project object with correct key', () async {
       // Arrange
-      var project = new Project(
-          name : 'Test Project',
-          description : 'This is a test'
-      );
+      var project = new Project.create('Test Project', 'This is a test');
       var expectedRedisKey = 'project:${project.name}';
       
-      RedisStore redisStore = new RedisStore(client);
+      var redisStore = new RedisStore(client);
       
       // Act
       await redisStore.storeProject(project);
       
       //Assert 
       return client.get(expectedRedisKey).then((String object) {
-        Project retrievedProject = new Project()..initFromJson(object);
+        var retrievedProject = new Project()..initFromJson(object);
         
         assert(project == retrievedProject);
       });
@@ -80,17 +70,17 @@ void main() {
     
     test('serialise and store User object with correct key', () async {
       // Arrange
-      var user = new User('firstName', 'lastName', 'username', 'plainTextPassword');
+      var user = new User.create('firstName', 'lastName', 'username', 'plainTextPassword');
       var expectedRedisKey = 'user:${user.username}';
       
-      RedisStore redisStore = new RedisStore(client);
+      var redisStore = new RedisStore(client);
       
       // Act
       await redisStore.storeUser(user);
       
       //Assert 
       return client.get(expectedRedisKey).then((String object) {
-        User retrievedUser = new User('','','','')..initFromJson(object);
+        var retrievedUser = new User()..initFromJson(object);
         
         assert(user == retrievedUser);
       });
@@ -99,17 +89,17 @@ void main() {
     
     test('serialise and store UserSession object with correct key', () async {
       // Arrange
-      var userSession = new UserSession('sessionToken', 'username');
+      var userSession = new UserSession.create('sessionToken', 'username');
       var expectedRedisKey = 'usersession:${userSession.sessionToken}';
       
-      RedisStore redisStore = new RedisStore(client);
+      var redisStore = new RedisStore(client);
       
       // Act
       await redisStore.storeUserSession(userSession);
       
       //Assert 
       return client.get(expectedRedisKey).then((String object) {
-        UserSession retrievedUserSession = new UserSession('','')..initFromJson(object);
+        var retrievedUserSession = new UserSession()..initFromJson(object);
         
         assert(userSession == retrievedUserSession);
       });
@@ -118,10 +108,10 @@ void main() {
     
     test('delete UserSession object with correct key', () async {
       // Arrange
-      var userSession = new UserSession('sessionToken', 'username');
+      var userSession = new UserSession.create('sessionToken', 'username');
       var expectedRedisKey = 'usersession:${userSession.sessionToken}';
       
-      RedisStore redisStore = new RedisStore(client);
+      var redisStore = new RedisStore(client);
       await redisStore.storeUserSession(userSession);
       
       // Act
@@ -142,16 +132,8 @@ void main() {
       var redisStore = new RedisStore(client);
       
       for(var i = 0; i < numberOfIssues; i++) {
-        var issue = new Issue(
-            id: '$i', 
-            title: 'Issue $i', 
-            description: 'Issue description', 
-            dueDate: new DateTime.now(), 
-            status: new IssueStatus.opened(), 
-            projectName: 'Project', 
-            createdBy: 'Bob', 
-            assignedTo: 'Bob'
-        );
+        var issue = new Issue.create('$i', 'Lorem ipsum dolor sit amet', 'This is the issue description.', 
+            new DateTime.now(), new IssueStatus.opened(), 'Project 1', 'Bob Doe', 'Bob Doe');
         
         await redisStore.storeIssue(issue);
         issues.add(issue);
@@ -176,10 +158,7 @@ void main() {
       var redisStore = new RedisStore(client);
 
       for(var i = 0; i < numberOfProjects; i++) {
-        var project = new Project(
-           name: 'Project $i', 
-           description: 'Project Description $i'
-        );
+        var project = new Project.create('Project $i', 'Project Description $i');
   
         await redisStore.storeProject(project);
         projects.add(project);
@@ -198,16 +177,8 @@ void main() {
     
     test('retrieves Issue object stored in the db given an id', () async {
       // Arrange
-      var issue = new Issue(
-                  id: 'guid', 
-                  title: 'Issue', 
-                  description: 'Issue description', 
-                  dueDate: new DateTime.now(), 
-                  status: new IssueStatus.opened(), 
-                  projectName: 'Project', 
-                  createdBy: 'Bob', 
-                  assignedTo: 'Bob'
-              );
+      var issue = new Issue.create('123', 'Lorem ipsum dolor sit amet', 'This is the issue description.', 
+          new DateTime.now(), new IssueStatus.opened(), 'Project 1', 'Bob Doe', 'Bob Doe');
       
       var redisStore = new RedisStore(client);
       
@@ -222,7 +193,7 @@ void main() {
     
     test('retrieves User object stored in the db given a username', () async {
       // Arrange
-      var user = new User('firstName', 'lastName', 'username', 'plainTextPassword');
+      var user = new User.create('firstName', 'lastName', 'username', 'plainTextPassword');
       
       var redisStore = new RedisStore(client);
       
@@ -237,7 +208,7 @@ void main() {
     
     test('retrieves UserSession object stored in the db given a sessionToken', () async {
       // Arrange
-      var userSession = new UserSession('sessionToken', 'username');
+      var userSession = new UserSession.create('sessionToken', 'username');
       
       var redisStore = new RedisStore(client);
       
@@ -252,16 +223,9 @@ void main() {
     
     test('returns true if Issue object exists', () async {
       // Arrange
-      var issue = new Issue(
-                  id: 'guid', 
-                  title: 'Issue', 
-                  description: 'Issue description', 
-                  dueDate: new DateTime.now(), 
-                  status: new IssueStatus.opened(), 
-                  projectName: 'Project', 
-                  createdBy: 'Bob', 
-                  assignedTo: 'Bob'
-              );
+      var issue = new Issue.create('123', 'Lorem ipsum dolor sit amet', 'This is the issue description.', 
+          new DateTime.now(), new IssueStatus.opened(), 'Project 1', 'Bob Doe', 'Bob Doe');
+      
       var expectedRedisKey = 'issue:${issue.id}';
       var redisStore = new RedisStore(client);
 
@@ -276,10 +240,7 @@ void main() {
     
     test('returns true if Project object exists', () async {
       // Arrange
-      var project = new Project(
-          name: 'Project 1',
-          description: 'Project description'
-      );
+      var project = new Project.create('Project 1', 'Project description');
       
       var expectedRedisKey = 'project:${project.name}';
       var redisStore = new RedisStore(client);
@@ -295,7 +256,7 @@ void main() {
     
     test('returns true if User object exists', () async {
       // Arrange
-      var user = new User('firstName', 'lastName', 'username', 'plainTextPassword');
+      var user = new User.create('firstName', 'lastName', 'username', 'plainTextPassword');
       
       var expectedRedisKey = 'user:${user.username}';
       var redisStore = new RedisStore(client);
@@ -311,7 +272,7 @@ void main() {
     
     test('returns true if User object exists', () async {
       // Arrange
-      var userSession = new UserSession('sessionToken', 'username');
+      var userSession = new UserSession.create('sessionToken', 'username');
       
       var expectedRedisKey = 'usersession:${userSession.sessionToken}';
       var redisStore = new RedisStore(client);

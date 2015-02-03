@@ -4,7 +4,8 @@ class PageInfo {
   int skipCount;
   int pageSize;
   
-  PageInfo(this.skipCount, this.pageSize);
+  PageInfo();
+  PageInfo.create(this.skipCount, this.pageSize);
   
   bool operator ==(o) {
      return o is PageInfo && 

@@ -10,12 +10,13 @@ void main() {
 
   test('can create Project', () async {
     // Arrange
+    const name = 'Test Project';
+    const description = 'This is a test';
+    
     var store = new StoreMock()
           ..when(callsTo('hasProject')).alwaysReturn(false);
     
-    ProjectService projectService = new ProjectService(store);
-    String name = 'Test Project';
-    String description = 'This is a test';
+    var projectService = new ProjectService(store);
 
     // Act
     await projectService.createProject(name, description);
@@ -26,15 +27,12 @@ void main() {
 
   test('can create project and set all properties', () async {
     // Arrange
-    Project expectedProject = new Project(
-        name : 'Test Project',
-        description : 'This is a test'
-    );
+    var expectedProject = new Project.create('Test Project', 'This is a test');
 
     var store = new StoreMock()
         ..when(callsTo('hasProject')).alwaysReturn(false);
     
-    ProjectService projectService = new ProjectService(store);
+    var projectService = new ProjectService(store);
 
     // Act
     await projectService.createProject(expectedProject.name, expectedProject.description);
@@ -45,14 +43,15 @@ void main() {
 
   test('will throw error if project name is not unique', () async {
     // Arrange
+    const name = 'Project 1';
+    
     var projects = new List<Project>()
-        ..add(new Project(name: 'Project 1'));
+        ..add(new Project.create('Project 1', 'This is a test'));
     
     var store = new StoreMock()
         ..when(callsTo('hasProject')).alwaysReturn(true);
     
-    ProjectService projectService = new ProjectService(store);
-    String name = 'Project 1';
+    var projectService = new ProjectService(store);
 
     // Act, Assert
     try {
